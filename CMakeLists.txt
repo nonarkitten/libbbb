@@ -26,11 +26,7 @@ set(SOURCE_FILES
         src/crt0.S
         src/string2.S)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -O0")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mlittle-endian -funsigned-char")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=cortex-a8 -mfpu=vfpv3")
-
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mcpu=cortex-a8 -mfpu=vfpv3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 
 add_library(bbb ${SOURCE_FILES})
 target_include_directories(bbb PRIVATE src)
@@ -39,6 +35,7 @@ install(TARGETS bbb DESTINATION lib)
 install(FILES ${HEADER_FILES} DESTINATION include)
 
 set(CPACK_GENERATOR "TGZ")
+set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
