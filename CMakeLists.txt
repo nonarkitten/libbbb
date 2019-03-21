@@ -25,6 +25,7 @@ enable_language(ASM)
 set(HEADER_FILES
         src/am335x_clock.h
         src/am335x_console.h
+        src/am335x_dmtimer1.h
         src/am335x_gpio.h
         src/am335x_i2c.h
         src/am335x_mux.h
@@ -35,6 +36,7 @@ set(HEADER_FILES
 set(SOURCE_FILES
         ${HEADER_FILES}
         src/am335x_clock.c
+        src/am335x_dmtimer1.c
         src/am335x_gpio.c
         src/am335x_i2c.c
         src/am335x_mux.c
@@ -57,7 +59,7 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "2")
+set(CPACK_PACKAGE_VERSION_MINOR "3")
 set(CPACK_PACKAGE_VERSION_PATCH "1")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/*.sh")
