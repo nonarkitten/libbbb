@@ -1,0 +1,16 @@
+image: heiafr/se12-builder:latest
+
+build:
+  stage: build
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DCMAKE_TOOLCHAIN_FILE=../arm-none-eabi.cmake ..
+    - make
+    - cpack --config CPackConfig.cmake
+    - cpack --config CPackSourceConfig.cmake
+  artifacts:
+    paths:
+      - build/libbbb-*.tar.gz
+      - build/libbbb-*-Source.7z
+      - build/libbbb-*-Source.zip
