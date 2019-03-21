@@ -27,5 +27,5 @@ UNSET(CMAKE_ASM_FLAGS CACHE)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mlittle-endian -funsigned-char -mno-unaligned-access")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=armv7-a -msoft-float" CACHE STRING "" FORCE)
-set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -march=armv7-a" CACHE STRING "" FORCE)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mcpu=cortex-a8 -mfpu=vfpv3 -msoft-float" CACHE STRING "" FORCE)
+set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} -mcpu=cortex-a8 -mfpu=vfpv3" CACHE STRING "" FORCE)
