@@ -44,7 +44,7 @@ set(SOURCE_FILES
         src/crt0.S
         src/string2.S)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 
 add_library(bbb ${SOURCE_FILES})
 target_include_directories(bbb PRIVATE src)
