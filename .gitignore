@@ -1,0 +1,6 @@
+/.idea
+/build
+
+/.gitmodules
+/update.sh
+/upstream
