@@ -13,4 +13,4 @@ make
 
 ## Downloading
 
-You can download the latest automatic build [here](https://gitlab.forge.hefr.ch/embedded-systems-1-2/libbbb/-/jobs/artifacts/master/browse/build?job=build).
+You can download the latest automatic build [here](https://gitlab.forge.hefr.ch/embsys/libbbb/-/jobs/artifacts/master/browse/build?job=build).
