@@ -1,4 +1,4 @@
-image: heiafr/se12-builder:latest
+image: heiafr/arm-none-eabi-builder:latest
 
 build:
   stage: build
