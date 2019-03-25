@@ -1,5 +1,9 @@
 image: heiafr/arm-none-eabi-builder:latest
 
+stages:
+  - build
+  - deploy
+
 build:
   stage: build
   script:
@@ -13,3 +17,8 @@ build:
     paths:
       - build/libbbb-*-arm-none-eabi.tar.gz
       - build/libbbb-*-Source.tar.gz
+
+update_docker_image:
+  stage: deploy
+  script:
+    - curl -s -X POST ${docker_hub_trigger_url} >/dev/null
