@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This module is based on the software library developped by Texas Instruments
- * Incorporated - http://www.ti.com/ for its AM335x starter kit.
- *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
  * Abstract: AM335x DTTimer1 
@@ -23,7 +20,7 @@
  * Purpose:	This module implements basic services to drive the AM335x DMTimer1
  *
  * Author: 	Daniel Gachet
- * Date: 	17.03.2019
+ * Date: 	23.03.2019
  */
 
 #include <stdint.h>
@@ -137,4 +134,16 @@ void am335x_dmtimer1_wait_ms(uint32_t ms)
 	while(((sp-st) < clocks)) {
 		sp = timer1->tcrr;
 	}
+}
+
+// ----------------------------------------------------------------------------
+
+uint64_t am335x_dmtimer1_get_uptime()
+{
+	static uint32_t st = 0;
+	static uint64_t uptime = 0;
+	uint32_t sp = timer1->tcrr;
+	uptime += sp - st;
+	st = sp;
+	return uptime;
 }
