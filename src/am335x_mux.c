@@ -34,10 +34,10 @@
 // pad control register bit definition
 #define PAD_CONTROL_SLEWCTRL	(1<<6)
 #define PAD_CONTROL_RXACTIVE	(1<<5)
-#define PAD_CONTROL_PULLUP	(1<<4)
+#define PAD_CONTROL_PULLUP		(1<<4)
 #define PAD_CONTROL_PULLUD_NONE	(1<<3)
 #define PAD_CONTROL_PULLDOWN	(0)
-#define PAD_CONTROL_MMODE	(0x7<<0)
+#define PAD_CONTROL_MMODE		(0x7<<0)
 
 static const struct gpio_pad {
 	volatile uint32_t* reg;
@@ -229,11 +229,11 @@ static const struct spi_pad_ctrl {
 	pad_t cs1;
 } spi_pad[3] = {
 	[1] = {
-		.sclk = {3, 14, 3 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLUP},
+		.sclk = {3, 14, 3 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLDOWN},
 		.d0   = {3, 15, 3 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLUP},
 		.d1   = {3, 16, 3 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLUP},
-		.cs0  = {3, 17, 3 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLUP},
-		.cs1  = {0, 13, 4 | PAD_CONTROL_RXACTIVE | PAD_CONTROL_PULLUP},
+		.cs0  = {3, 17, 3 | 0                    | PAD_CONTROL_PULLUP},
+		.cs1  = {0, 13, 4 | 0                    | PAD_CONTROL_PULLUP},
 	},
 };
 

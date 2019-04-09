@@ -80,6 +80,7 @@ extern int am335x_spi_read_b(
 	enum am335x_spi_controllers ctrl,
 	enum am335x_spi_channels channel,
 	uint8_t cmd_word,
+	uint8_t nop_word,
 	uint8_t* buffer, 
 	size_t buffer_len);
 
@@ -96,7 +97,7 @@ extern int am335x_spi_read_b(
  * 
  *@return int status, 0=success, -1=error
  */
-extern int am335x_spi_write(
+extern int am335x_spi_write_w(
 	enum am335x_spi_controllers ctrl,
 	enum am335x_spi_channels channel,
 	const uint32_t* buffer, 

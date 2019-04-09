@@ -129,9 +129,6 @@ void am335x_spi_init(
 		// enable spi module clock
 		am335x_clock_enable_spi_module (spi2clock[ctrl]);
 
-		// setup spi pins
-		am335x_mux_setup_spi_pins (spi2mux[ctrl]);
-
 		// reset and disable spi controller
 		spi->sysconfig = SYSCONFIG_SRST;
 		while((spi->sysstatus & SYSSTATUS_RDONE) == 0);
@@ -142,12 +139,12 @@ void am335x_spi_init(
 		// configure module contoller
 		// module is configured after the channel to avoid glitch on chip select signal
 		spi->modulctrl =(0<<8)	// fifo managed with ctrl register
-					| (0<<7)	// multiword disabled
-					| (1<<4)	// initial spi delay = 4 spi clock
-					| (0<<3)	// functional mode
-					| (0<<2)	// master mode
-					| (0<<1)	// use SPIEN as chip select
-					| (1<<0);	// multi channel mode
+					  | (0<<7)	// multiword disabled
+				  	  | (1<<4)	// initial spi delay = 4 spi clock
+					  | (0<<3)	// functional mode
+				  	  | (0<<2)	// master mode
+					  | (0<<1)	// use SPIEN as chip select
+					  | (1<<0);	// multi channel mode
 	
 		is_initialized = true;
 	}
@@ -189,6 +186,9 @@ void am335x_spi_init(
 
 	// configure clock ration extender
 	chan->chctrl = (extclk << 8);
+
+	// setup spi pins
+	am335x_mux_setup_spi_pins (spi2mux[ctrl]);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -197,6 +197,7 @@ int am335x_spi_read_b(
 	enum am335x_spi_controllers ctrl,
 	enum am335x_spi_channels channel,
 	uint8_t cmd_word,
+	uint8_t nop_word,
 	uint8_t* buffer, 
 	size_t buffer_len)
 {
@@ -212,6 +213,7 @@ int am335x_spi_read_b(
 		while ((chan->chstat & CHSTAT_RXS) == 0);
 		*buffer++ = chan->rx & 0xff;
 		buffer_len--;
+		cmd_word = nop_word;
 	}
 
 	while ((chan->chstat & CHSTAT_EOT) == 0);	// wait until transfer complete
@@ -253,7 +255,7 @@ int am335x_spi_write_b(
 	return 0;
 }
 
-int am335x_spi_write(
+int am335x_spi_write_w(
 	enum am335x_spi_controllers ctrl,
 	enum am335x_spi_channels channel,
 	const uint32_t* buffer, 
