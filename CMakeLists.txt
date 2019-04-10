@@ -31,6 +31,8 @@ set(HEADER_FILES
         src/am335x_mux.h
         src/am335x_spi.h
         src/am335x_uart.h
+        src/font_8x8.h
+        src/oled.h
         src/string2.h)
 
 set(SOURCE_FILES
@@ -44,6 +46,7 @@ set(SOURCE_FILES
         src/am335x_uart.c
         src/bbb_syscall.c
         src/crt0.S
+        src/oled.c
         src/string2.S)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
