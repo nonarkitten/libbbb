@@ -18,10 +18,10 @@
  *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x Serial Interface for newlib system calls
+ * Abstract: AM335x Serial Interface for newlib system calls
  *
  * Purpose:	This module provides services for the serial user interface
- * 		used by the standard input/output functions on UART0
+ * 			used by the standard input/output functions on UART0
  *
  * Author: 	Daniel Gachet
  * Date: 	03.07.2015
@@ -32,9 +32,9 @@
 /** 
  * initialization method, this method shall be called prior any other ones 
  */
-static inline void am335x_console_init(void) 
+static inline void am335x_console_init(void)
 {
-	am335x_uart_init (AM335X_UART0); 
+    am335x_uart_init(AM335X_UART0);
 }
 
 /**
@@ -42,11 +42,10 @@ static inline void am335x_console_init(void)
  *
  * @param baudrate terminal baudrate value in bit/s
  */
-static inline void am335x_console_set_baudrate (uint32_t baudrate)
+static inline void am335x_console_set_baudrate(uint32_t baudrate)
 {
-	am335x_uart_set_baudrate (AM335X_UART0, baudrate);
+    am335x_uart_set_baudrate(AM335X_UART0, baudrate);
 }
-
 
 /** 
  * method to test if a character is available 
@@ -55,9 +54,8 @@ static inline void am335x_console_set_baudrate (uint32_t baudrate)
  */
 static inline bool am335x_console_tstc(void)
 {
-	return am335x_uart_tstc (AM335X_UART0);
+    return am335x_uart_tstc(AM335X_UART0);
 }
-
 
 /**
  * method to read a character from the serial interface.
@@ -67,9 +65,8 @@ static inline bool am335x_console_tstc(void)
  */
 static inline int am335x_console_getc(void)
 {
-	return am335x_uart_read (AM335X_UART0);
+    return am335x_uart_read(AM335X_UART0);
 }
-
 
 /**
  * methods to send characters on the serial interface.
@@ -77,26 +74,24 @@ static inline int am335x_console_getc(void)
  *
  * @param c character to send on the serial interface
  */
-static inline void am335x_console_putc (char c)
+static inline void am335x_console_putc(char c)
 {
-	am335x_uart_write (AM335X_UART0, c);
-	if (c == '\n')
-		am335x_uart_write (AM335X_UART0, '\r');
-	if (c == '\r')
-		am335x_uart_write (AM335X_UART0, '\n');
+    am335x_uart_write(AM335X_UART0, c);
+    if (c == '\n')
+        am335x_uart_write(AM335X_UART0, '\r');
+    if (c == '\r')
+        am335x_uart_write(AM335X_UART0, '\n');
 }
-
 
 /**
  * methods to send a character string on the serial interface.
   *
  * @param s character string to send on the serial interface
  */
-static inline void am335x_console_puts (const char *s)
+static inline void am335x_console_puts(const char* s)
 {
-	while (*s)
-		am335x_console_putc (*s++);
+    while (*s)
+        am335x_console_putc(*s++);
 }
 
 #endif
-

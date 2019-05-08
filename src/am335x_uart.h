@@ -18,29 +18,29 @@
  *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver 
+ * Abstract: AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver 
  *
  * Purpose:	This module implements basic services to drive the AM335x UART
- *		controller as serial user interface mainly used by the standard 
- *		input/output functions of the standard C library.
+ *			controller as serial user interface mainly used by the standard 
+ *			input/output functions of the standard C library.
  *
  * Author: 	Daniel Gachet
  * Date: 	03.07.2015
  */
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /**
  * defines the available uart controllers of the am335x
  */
 enum am335x_uart_controllers {
-	AM335X_UART0, 
-	AM335X_UART1, 
-	AM335X_UART2, 
-	AM335X_UART3, 
-	AM335X_UART4, 
-	AM335X_UART5, 
+    AM335X_UART0,
+    AM335X_UART1,
+    AM335X_UART2,
+    AM335X_UART3,
+    AM335X_UART4,
+    AM335X_UART5,
 };
 
 /** 
@@ -54,8 +54,7 @@ enum am335x_uart_controllers {
  *
  * @param ctrl am335x uart controller number
  */
-extern void am335x_uart_init (enum am335x_uart_controllers ctrl);
-
+extern void am335x_uart_init(enum am335x_uart_controllers ctrl);
 
 /**
  * method to change the baudrate
@@ -63,10 +62,9 @@ extern void am335x_uart_init (enum am335x_uart_controllers ctrl);
  * @param ctrl am335x uart controller number
  * @param baudrate terminal baudrate value in bit/s
  */
-extern void am335x_uart_set_baudrate (
-	enum am335x_uart_controllers ctrl, 
-	uint32_t baudrate);
-
+extern void am335x_uart_set_baudrate(
+    enum am335x_uart_controllers ctrl,
+    uint32_t baudrate);
 
 /** 
  * method to test if a character is available 
@@ -75,7 +73,6 @@ extern void am335x_uart_set_baudrate (
  * @return true if character available, false otherwise
  */
 extern bool am335x_uart_tstc(enum am335x_uart_controllers ctrl);
-
 
 /**
  * method to read a character from the serial interface.
@@ -86,7 +83,6 @@ extern bool am335x_uart_tstc(enum am335x_uart_controllers ctrl);
  */
 extern int am335x_uart_read(enum am335x_uart_controllers ctrl);
 
-
 /**
  * method to send a character on the serial interface.
  * the caller will be blocked until the character can be put into the uart fifo.
@@ -95,8 +91,7 @@ extern int am335x_uart_read(enum am335x_uart_controllers ctrl);
  * @param c character to send on the serial interface
  */
 extern void am335x_uart_write(
-	enum am335x_uart_controllers ctrl,
-	int c);
+    enum am335x_uart_controllers ctrl,
+    int c);
 
 #endif
-

@@ -33,7 +33,12 @@ set(HEADER_FILES
         src/am335x_uart.h
         src/font_8x8.h
         src/oled.h
-        src/string2.h)
+        src/string2.h
+	src/bbb_fs.h
+	src/console.h
+	src/dirent.h
+	src/path.h
+	src/vfs.h)
 
 set(SOURCE_FILES
         ${HEADER_FILES}
@@ -47,7 +52,12 @@ set(SOURCE_FILES
         src/bbb_syscall.c
         src/crt0.S
         src/oled.c
-        src/string2.S)
+        src/string2.S
+	src/bbb_fs.c
+	src/console.c
+	src/dirent.c
+	src/path.c
+	src/vfs.c)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
 

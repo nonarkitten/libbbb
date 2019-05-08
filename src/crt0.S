@@ -15,7 +15,7 @@
  * 
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract:	AM335x startup 
+ * Abstract: AM335x startup 
  *
  * Purpose:	BeagleBone Black - AM335x startup code
  *
@@ -27,7 +27,6 @@
  * source file: /home/lmi/workspace/bbb/bbdrv/system_config/armv7a/gcc/init.S 
  */
 
-
 	.bss
 stack:	.space 0x1000
 stacktop:
@@ -35,9 +34,9 @@ stacktop:
 	.global _start
 	.section .text_startup
 
-_start:	nop
+_start:	
+	nop
 	ldr	lr, =end  /* init lr to avoid errmsg on gdb */
-
 
 	// to be adapted....
 	msr	cpsr_c, #0xdf
@@ -51,25 +50,24 @@ _start:	nop
 	msr	cpsr_c, #0xdb
 	ldr	sp,=_stack_bottom + 0x28
 
-
 	/* set the C stack pointer */
 	/* Some info about GDB & OpenOCD 
-	 * (faq: http://openocd.berlios.de/doc/html/FAQ.html) 
-	 * push 8 registers of zeros onto the stack before calling main(). 
-	 * What GDB is doing is “climbing” the run time stack by reading 		 
-	 * various values on the stack using the standard call frame for 
-	 * the target. GDB keeps going - until one of 2 things happen #1 
-	 * an invalid frame is found, or #2 some huge number of stackframes
-	 * have been processed. By pushing zeros on the stack, GDB 
-	 * gracefully stops.
- 	 */
+		* (faq: http://openocd.berlios.de/doc/html/FAQ.html) 
+		* push 8 registers of zeros onto the stack before calling main(). 
+		* What GDB is doing is “climbing” the run time stack by reading 		 
+		* various values on the stack using the standard call frame for 
+		* the target. GDB keeps going - until one of 2 things happen #1 
+		* an invalid frame is found, or #2 some huge number of stackframes
+		* have been processed. By pushing zeros on the stack, GDB 
+		* gracefully stops.
+		*/
 	msr	cpsr_c, #0xd3
 	ldr	sp,=__c_stack_top__
 	mov	r0, #0			
 	mov	r1, #8
-fill:	str	r0, [sp, #-4]!
+1:	str	r0, [sp, #-4]!
 	subs	r1, #1
-	bne	fill
+	bne	1b
 
 
 	// Invalidate and Enable Branch Prediction  
@@ -109,21 +107,22 @@ fill:	str	r0, [sp, #-4]!
 	mcr	p15, 0, r0, c1, c0, 0
 
 
-        // Clear the .bss section (zero init)
+		// Clear the .bss section (zero init)
 	mov	r0, #0
-        ldr	r1, =__bss_start__
-        ldr	r2, =_end
-loop:	cmp	r1, r2
+	ldr	r1, =__bss_start__
+	ldr	r2, =_end
+1:	cmp	r1, r2
 	strlo	r0, [r1], #4
-        blo     loop
-        
+	blo     1b
+	
 	// Initialize stdlib
 	ldr	r0,=_init
 	blx	r0
 
 	// Enter main program
 	ldr	r0, =main
-        blx	r0
-
-end:	nop
-	b	end
+	blx	r0
+	
+end:
+1:	nop
+	b	1b

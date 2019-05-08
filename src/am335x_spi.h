@@ -18,10 +18,10 @@
  *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x McSPI Driver 
+ * Abstract: AM335x McSPI Driver 
  *
  * Purpose:	This module implements basic services to drive the AM335x McSPI
- *		controller.
+ *			controller.
  *
  * Author: 	Daniel Gachet
  * Date: 	24.08.2015
@@ -34,18 +34,17 @@
  * defines the available spi controllers of the am335x
  */
 enum am335x_spi_controllers {
-	AM335X_SPI0, 
-	AM335X_SPI1, 
+    AM335X_SPI0,
+    AM335X_SPI1,
 };
 
 /**
  * defines the available channels to be activated during data transfer
- */	
+ */
 enum am335x_spi_channels {
-	AM335X_CHAN0, 
-	AM335X_CHAN1, 
+    AM335X_CHAN0,
+    AM335X_CHAN1,
 };
-
 
 /** 
  * method to initialize a specific am335x spi controller,
@@ -57,11 +56,10 @@ enum am335x_spi_channels {
  *@param word_len size of data word in bits
  */
 extern void am335x_spi_init(
-	enum am335x_spi_controllers ctrl,
-	enum am335x_spi_channels channel,
-	uint32_t bus_speed,
-	uint32_t word_len);
-
+    enum am335x_spi_controllers ctrl,
+    enum am335x_spi_channels channel,
+    uint32_t bus_speed,
+    uint32_t word_len);
 
 /**
  * method to read data bytes from the internal register files of
@@ -77,12 +75,12 @@ extern void am335x_spi_init(
  *@return int status, 0=success, -1=error
  */
 extern int am335x_spi_read_b(
-	enum am335x_spi_controllers ctrl,
-	enum am335x_spi_channels channel,
-	uint8_t cmd_word,
-	uint8_t nop_word,
-	uint8_t* buffer, 
-	size_t buffer_len);
+    enum am335x_spi_controllers ctrl,
+    enum am335x_spi_channels channel,
+    uint8_t cmd_word,
+    uint8_t nop_word,
+    uint8_t* buffer,
+    size_t buffer_len);
 
 /**
  * method to write data byte into the internal register files of 
@@ -98,15 +96,14 @@ extern int am335x_spi_read_b(
  *@return int status, 0=success, -1=error
  */
 extern int am335x_spi_write_w(
-	enum am335x_spi_controllers ctrl,
-	enum am335x_spi_channels channel,
-	const uint32_t* buffer, 
-	uint32_t buffer_len);
+    enum am335x_spi_controllers ctrl,
+    enum am335x_spi_channels channel,
+    const uint32_t* buffer,
+    uint32_t buffer_len);
 
 extern int am335x_spi_write_b(
-	enum am335x_spi_controllers ctrl,
-	enum am335x_spi_channels channel,
-	const uint8_t* buffer, 
-	size_t buffer_len);
+    enum am335x_spi_controllers ctrl,
+    enum am335x_spi_channels channel,
+    const uint8_t* buffer,
+    size_t buffer_len);
 #endif
-

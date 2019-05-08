@@ -18,10 +18,10 @@
  *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x Clocking Driver 
+ * Abstract: AM335x Clocking Driver 
  *
  * Purpose:	This module implements basic services to drive the AM335x 
- * 		clocking module.
+ * 			clocking module.
  *
  * Author: 	Daniel Gachet
  * Date: 	28.11.2016
@@ -31,72 +31,71 @@
  * am335x uart clock modules
  */
 enum am335x_clock_uart_modules {
-	AM335X_CLOCK_UART0,
-	AM335X_CLOCK_UART1,
-	AM335X_CLOCK_UART2,
-	AM335X_CLOCK_UART3,
-	AM335X_CLOCK_UART4,
-	AM335X_CLOCK_UART5,
+    AM335X_CLOCK_UART0,
+    AM335X_CLOCK_UART1,
+    AM335X_CLOCK_UART2,
+    AM335X_CLOCK_UART3,
+    AM335X_CLOCK_UART4,
+    AM335X_CLOCK_UART5,
 };
 
 /**
  * am335x gpio clock modules
  */
 enum am335x_clock_gpio_modules {
-	AM335X_CLOCK_GPIO0,
-	AM335X_CLOCK_GPIO1,
-	AM335X_CLOCK_GPIO2,
-	AM335X_CLOCK_GPIO3,
+    AM335X_CLOCK_GPIO0,
+    AM335X_CLOCK_GPIO1,
+    AM335X_CLOCK_GPIO2,
+    AM335X_CLOCK_GPIO3,
 };
 
 /**
  * am335x i2c clock modules
  */
 enum am335x_clock_i2c_modules {
-	AM335X_CLOCK_I2C0,
-	AM335X_CLOCK_I2C1,
-	AM335X_CLOCK_I2C2,
+    AM335X_CLOCK_I2C0,
+    AM335X_CLOCK_I2C1,
+    AM335X_CLOCK_I2C2,
 };
 
 /**
  * am335x i2c clock modules
  */
 enum am335x_clock_spi_modules {
-	AM335X_CLOCK_SPI0,
-	AM335X_CLOCK_SPI1,
+    AM335X_CLOCK_SPI0,
+    AM335X_CLOCK_SPI1,
 };
 
 /**
  * am335x timer clock modules
  */
 enum am335x_clock_timer_modules {
-	AM335X_CLOCK_TIMER0,
-	AM335X_CLOCK_TIMER1,
-	AM335X_CLOCK_TIMER2,
-	AM335X_CLOCK_TIMER3,
-	AM335X_CLOCK_TIMER4,
-	AM335X_CLOCK_TIMER5,
-	AM335X_CLOCK_TIMER6,
-	AM335X_CLOCK_TIMER7
+    AM335X_CLOCK_TIMER0,
+    AM335X_CLOCK_TIMER1,
+    AM335X_CLOCK_TIMER2,
+    AM335X_CLOCK_TIMER3,
+    AM335X_CLOCK_TIMER4,
+    AM335X_CLOCK_TIMER5,
+    AM335X_CLOCK_TIMER6,
+    AM335X_CLOCK_TIMER7
 };
 
 /**
  * am335x mmc clock modules
  */
 enum am335x_clock_mmc_modules {
-	AM335X_CLOCK_MMC0,
-	AM335X_CLOCK_MMC1,
-	AM335X_CLOCK_MMC2
+    AM335X_CLOCK_MMC0,
+    AM335X_CLOCK_MMC1,
+    AM335X_CLOCK_MMC2
 };
-
 
 /**
  * am335x epwm clock modules
  */
 enum am335x_clock_epwm_modules {
-	AM335X_CLOCK_EPWM0,
-	AM335X_CLOCK_EPWM1,
-	AM335X_CLOCK_EPWM2
+    AM335X_CLOCK_EPWM0,
+    AM335X_CLOCK_EPWM1,
+    AM335X_CLOCK_EPWM2
 };
 
 /**
@@ -107,38 +106,37 @@ extern void am335x_clock_enable_l3_l4wkup(void);
 /**
  * method to enable the clock instance for a specific uart.
  */
-extern void am335x_clock_enable_uart_module (enum am335x_clock_uart_modules module);
-
+extern void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module);
 
 /**
  * method to enable the clock instance for a specific gpio module.
  */
-extern void am335x_clock_enable_gpio_module (enum am335x_clock_gpio_modules module);
+extern void am335x_clock_enable_gpio_module(enum am335x_clock_gpio_modules module);
 
 /**
  * method to enable the clock instance for a specific i2c module.
  */
-extern void am335x_clock_enable_i2c_module (enum am335x_clock_i2c_modules module);
+extern void am335x_clock_enable_i2c_module(enum am335x_clock_i2c_modules module);
 
 /**
  * method to enable the clock instance for a specific spi module.
  */
-extern void am335x_clock_enable_spi_module (enum am335x_clock_spi_modules module);
+extern void am335x_clock_enable_spi_module(enum am335x_clock_spi_modules module);
 
 /**
  * method to enable the clock instance for a specific timer module.
  */
-extern void am335x_clock_enable_timer_module (enum am335x_clock_timer_modules module);
+extern void am335x_clock_enable_timer_module(enum am335x_clock_timer_modules module);
 
 /**
  * method to enable the clock instance for a specific mmc module.
  */
-extern void am335x_clock_enable_mmc_module (enum am335x_clock_mmc_modules module);
+extern void am335x_clock_enable_mmc_module(enum am335x_clock_mmc_modules module);
 
 /**
  * method to enable the clock instance for a specific epwm module.
  */
-extern void am335x_clock_enable_epwm_module (enum am335x_clock_epwm_modules module);
+extern void am335x_clock_enable_epwm_module(enum am335x_clock_epwm_modules module);
 
 /**
  * method to enable the clock instance for EDMA
@@ -150,6 +148,4 @@ extern void am335x_clock_enable_edma_module();
  */
 extern void am335x_clock_enable_cpsw_module();
 
-
 #endif
-

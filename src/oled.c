@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2019 University of Applied Sciences Western Switzerland / Fribourg
  *
@@ -387,8 +386,8 @@ static void ssd1351_init()
 	send_cmd(SSD1351_SETDISPLAYMODE_RESET);
 
   	// Clear screen
-	oled_memory_size(0,127,0,127);
-	for (int i=0;i<128*128; i++)
+	oled_memory_size(0,95,0,95);
+	for (int i=0;i<96*96; i++)
 		oled_color(0x0000);
 
 	// Turn the display on

@@ -18,25 +18,25 @@
  *
  * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x I2C Driver 
+ * Abstract: AM335x I2C Driver 
  *
  * Purpose:	This module implements basic services to drive the AM335x I2C
- *		controller.
+ *			controller.
  *
  * Author: 	Daniel Gachet
  * Date: 	03.07.2015
  */
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /**
  * defines the available i2c controllers of the am335x
  */
 enum am335x_i2c_controllers {
-	AM335X_I2C0, 
-//	AM335X_I2C1, 	--> no more supported on HEIA-FR board
-	AM335X_I2C2, 
+    AM335X_I2C0,
+    //	AM335X_I2C1, 	--> no more supported on HEIA-FR board
+    AM335X_I2C2,
 };
 
 /** 
@@ -47,9 +47,8 @@ enum am335x_i2c_controllers {
  *@bus_speed i2c bus speed in Hz
  */
 extern void am335x_i2c_init(
-	enum am335x_i2c_controllers ctrl,
-	uint32_t bus_speed);
-
+    enum am335x_i2c_controllers ctrl,
+    uint32_t bus_speed);
 
 /**
  * method to read data bytes from the internal register files of
@@ -63,12 +62,11 @@ extern void am335x_i2c_init(
  *@return int status, 0=success, -1=error
  */
 extern int am335x_i2c_read(
-	enum am335x_i2c_controllers ctrl,
-	uint8_t chip_id, 
-	uint8_t reg,
-	uint8_t* data, 
-	uint16_t data_len);
-
+    enum am335x_i2c_controllers ctrl,
+    uint8_t chip_id,
+    uint8_t reg,
+    uint8_t* data,
+    uint16_t data_len);
 
 /**
  * method to write data byte into the internal register files of 
@@ -83,12 +81,11 @@ extern int am335x_i2c_read(
  *@return int status, 0=success, -1=error
  */
 extern int am335x_i2c_write(
-	enum am335x_i2c_controllers ctrl,
-	uint8_t chip_id, 
-	uint8_t reg,
-	const uint8_t* data, 
-	uint16_t data_len);
-
+    enum am335x_i2c_controllers ctrl,
+    uint8_t chip_id,
+    uint8_t reg,
+    const uint8_t* data,
+    uint16_t data_len);
 
 /**
  * method to see if a chip is present on the I2C bus.
@@ -98,8 +95,7 @@ extern int am335x_i2c_write(
  *@return bool true if the chip is present, false otherwise
  */
 extern bool am335x_i2c_probe(
-	enum am335x_i2c_controllers ctrl,
-	uint8_t chip_id);
+    enum am335x_i2c_controllers ctrl,
+    uint8_t chip_id);
 
 #endif
-

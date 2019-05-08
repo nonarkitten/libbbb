@@ -51,14 +51,14 @@ extern uint32_t am335x_dmtimer1_get_frequency();
  * method to wait specified amount of microseconds
  * waiting timing is done in busywait mode
  * @param us number of microseconds to wait
- */ 
+ */
 extern void am335x_dmtimer1_wait_us(uint32_t us);
 
 /**
  * method to wait specified amount of milliseconds
  * waiting timing is done in busywait mode
  * @param ms number of milliseconds to wait
- */ 
+ */
 extern void am335x_dmtimer1_wait_ms(uint32_t ms);
 
 /**

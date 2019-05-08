@@ -16,57 +16,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:		HEIA-FR / Embedded Systems 1+2 Laboratory
+ * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: 	AM335x Pin Multiplexer Driver 
+ * Abstract: AM335x Pin Multiplexer Driver 
  *
- * Purpose:		This module implements basic services to drive the AM335x 
- * 				pin multiplexer module.
+ * Purpose:	This module implements basic services to drive the AM335x 
+ * 			pin multiplexer module.
  *
- * Author: 		Daniel Gachet
- * Date: 		21.03.2018
+ * Author: 	Daniel Gachet
+ * Date: 	21.03.2018
  */
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /**
  * am335x gpio modules
  */
 enum am335x_gpio_modules {
-	AM335X_GPIO0,
-	AM335X_GPIO1,
-	AM335X_GPIO2,
-	AM335X_GPIO3,
-	AM335X_GPIO_NB_MODULES
+    AM335X_GPIO0,
+    AM335X_GPIO1,
+    AM335X_GPIO2,
+    AM335X_GPIO3,
+    AM335X_GPIO_NB_MODULES
 };
 
 /**
  * am335x gpio pin direction
  */
 enum am335x_gpio_pin_direction {
-	AM335X_GPIO_PIN_OUT,
-	AM335X_GPIO_PIN_IN,
+    AM335X_GPIO_PIN_OUT,
+    AM335X_GPIO_PIN_IN,
 };
 
 /**
  * am335x gpio pin pull-up, pull-down
  */
 enum am335x_gpio_pin_pull {
-	AM335X_GPIO_PULL_NONE,
-	AM335X_GPIO_PULL_UP,
-	AM335X_GPIO_PULL_DOWN,
+    AM335X_GPIO_PULL_NONE,
+    AM335X_GPIO_PULL_UP,
+    AM335X_GPIO_PULL_DOWN,
 };
 
 /**
  * am335x gpio pin interrupt modes
  */
 enum am335x_gpio_interrupt_modes {
-	AM335X_GPIO_IRQ_RISING,
-	AM335X_GPIO_IRQ_FALLING,
-	AM335X_GPIO_IRQ_BOTH,
-	AM335X_GPIO_IRQ_HIGH,
-	AM335X_GPIO_IRQ_LOW
+    AM335X_GPIO_IRQ_RISING,
+    AM335X_GPIO_IRQ_FALLING,
+    AM335X_GPIO_IRQ_BOTH,
+    AM335X_GPIO_IRQ_HIGH,
+    AM335X_GPIO_IRQ_LOW
 };
 
 /**
@@ -77,10 +77,9 @@ enum am335x_gpio_interrupt_modes {
  * @param param application specific parameter 
  */
 typedef void (*am335x_gpio_handler_t)(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_r, 
-	void* param);
-
+    enum am335x_gpio_modules module,
+    uint32_t pin_r,
+    void* param);
 
 /**
  * method to initialize a gpio module
@@ -88,7 +87,7 @@ typedef void (*am335x_gpio_handler_t)(
  *@param module gpio module name
  *@return module base address
  */
-extern void* am335x_gpio_init (enum am335x_gpio_modules module);
+extern void* am335x_gpio_init(enum am335x_gpio_modules module);
 
 /**
  * method to setup pin multiplexing as input gpio 
@@ -99,10 +98,10 @@ extern void* am335x_gpio_init (enum am335x_gpio_modules module);
  *@param has_to_be_debounced true if the input pin should be debounced
  */
 extern void am335x_gpio_setup_pin_in(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_nr,
-	enum am335x_gpio_pin_pull pin_pull,
-	bool has_to_be_debounced);
+    enum am335x_gpio_modules module,
+    uint32_t pin_nr,
+    enum am335x_gpio_pin_pull pin_pull,
+    bool has_to_be_debounced);
 
 /**
  * method to setup pin multiplexing as output gpio 
@@ -112,9 +111,9 @@ extern void am335x_gpio_setup_pin_in(
  *@param state initial pin state (true-->1, false-->0)
  */
 extern void am335x_gpio_setup_pin_out(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_nr,
-	bool state);
+    enum am335x_gpio_modules module,
+    uint32_t pin_nr,
+    bool state);
 
 /**
  * method to setup pin multiplexing as gpio 
@@ -125,10 +124,10 @@ extern void am335x_gpio_setup_pin_out(
  *@param pin_pull I/O pull-up/-down/-none
  */
 extern void am335x_gpio_setup_pin(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_nr,
-	enum am335x_gpio_pin_direction pin_dir,
-	enum am335x_gpio_pin_pull pin_pull);
+    enum am335x_gpio_modules module,
+    uint32_t pin_nr,
+    enum am335x_gpio_pin_direction pin_dir,
+    enum am335x_gpio_pin_pull pin_pull);
 
 /**
  * method to set pin direction 
@@ -138,9 +137,9 @@ extern void am335x_gpio_setup_pin(
  *@param pin_dir I/O pin direction
  */
 extern void am335x_gpio_set_pin_dir(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_nr,
-	enum am335x_gpio_pin_direction pin_dir);
+    enum am335x_gpio_modules module,
+    uint32_t pin_nr,
+    enum am335x_gpio_pin_direction pin_dir);
 
 /**
  * method to change state of the specified gpio pin
@@ -150,9 +149,9 @@ extern void am335x_gpio_set_pin_dir(
  *@param pin_state pin state 0/1
  */
 extern void am335x_gpio_change_state(
-	enum am335x_gpio_modules gpio_nr, 
-	uint32_t pin_nr,
-	bool pin_state);
+    enum am335x_gpio_modules gpio_nr,
+    uint32_t pin_nr,
+    bool pin_state);
 
 /**
  * method to get current state of the specified gpio pin
@@ -162,9 +161,8 @@ extern void am335x_gpio_change_state(
  *@return current pin state value
  */
 extern bool am335x_gpio_get_state(
-	enum am335x_gpio_modules gpio_nr, 
-	uint32_t pin_nr);
-
+    enum am335x_gpio_modules gpio_nr,
+    uint32_t pin_nr);
 
 /**
  * method to change state of specified gpio pin set
@@ -174,10 +172,9 @@ extern bool am335x_gpio_get_state(
  *@param pin_state pin state 0/1
  */
 extern void am335x_gpio_change_states(
-	enum am335x_gpio_modules gpio_nr, 
-	uint32_t pin_set,
-	bool pin_state);
-
+    enum am335x_gpio_modules gpio_nr,
+    uint32_t pin_set,
+    bool pin_state);
 
 /**
  * method to get current state of the specified gpio pins
@@ -185,8 +182,7 @@ extern void am335x_gpio_change_states(
  *@param module gpio module name
  *@return current gpio pin set state value
  */
-extern uint32_t am335x_gpio_get_states (enum am335x_gpio_modules gpio_nr);
-
+extern uint32_t am335x_gpio_get_states(enum am335x_gpio_modules gpio_nr);
 
 /**
  * method to enable interrupt on the specified pin
@@ -196,7 +192,6 @@ extern uint32_t am335x_gpio_get_states (enum am335x_gpio_modules gpio_nr);
  */
 extern void am335x_gpio_enable(enum am335x_gpio_modules module, uint32_t pin_nr);
 
-
 /**
  * method to disable interrupt on the specified pin
  *
@@ -205,12 +200,10 @@ extern void am335x_gpio_enable(enum am335x_gpio_modules module, uint32_t pin_nr)
  */
 extern void am335x_gpio_disable(enum am335x_gpio_modules module, uint32_t pin_nr);
 
-
 /**
  * interrupt service routine. Should be attach to INTC for processing
  */
-extern void am335x_gpio_interrupt_handler (enum am335x_gpio_modules module);
-
+extern void am335x_gpio_interrupt_handler(enum am335x_gpio_modules module);
 
 /**
  * method to return the pin number having raised the interrupt
@@ -219,7 +212,6 @@ extern void am335x_gpio_interrupt_handler (enum am335x_gpio_modules module);
  * @return pin number having raised the interrupt, -1 in case of error
  */
 extern int am335x_gpio_vector(enum am335x_gpio_modules module);
-
 
 /**
  * method to setup pin as interrupt request line 
@@ -233,11 +225,10 @@ extern int am335x_gpio_vector(enum am335x_gpio_modules module);
  * @return execution status (0=success, -1=error)
  */
 extern int am335x_gpio_setup_pin_irq(
-	enum am335x_gpio_modules module, 
-	uint32_t pin_nr,
-	enum am335x_gpio_interrupt_modes mode,
-	bool has_to_be_debounced,
-	enum am335x_gpio_pin_pull pin_pull);
+    enum am335x_gpio_modules module,
+    uint32_t pin_nr,
+    enum am335x_gpio_interrupt_modes mode,
+    bool has_to_be_debounced,
+    enum am335x_gpio_pin_pull pin_pull);
 
 #endif
-
