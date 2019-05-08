@@ -53,7 +53,7 @@ const char* path_purify(char* path)
         if (p == 0) break;
         *p      = 0;
         char* s = strrchr(path, '/');
-        s       = (s == 0) ? path : s + 1;
+        s       = (s == 0) ? path : s;
         strcpy(s, p + 3);
     }
 
