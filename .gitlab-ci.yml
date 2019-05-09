@@ -1,8 +1,14 @@
 image: heiafr/arm-none-eabi-builder:latest
 
 stages:
+  - check
   - build
   - deploy
+
+check:
+  stage: check
+  script:
+    - find src -name '*.[ch]' | xargs cpplint --filter=-,+whitespace/tab,+whitespace/line_length,+readability/utf8 --output=vs7
 
 build:
   stage: build
