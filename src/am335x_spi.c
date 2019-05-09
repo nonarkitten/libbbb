@@ -1,12 +1,12 @@
 /**
  * Copyright 2019 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,15 @@
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
  *
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x McSPI Driver 
+ * Abstract: AM335x McSPI Driver
  *
- * Purpose:	This module implements basic services to drive the AM335x McSPI
- *			controller.
+ * Purpose: This module implements basic services to drive the AM335x McSPI
+ *          controller.
  *
- * Author: 	Daniel Gachet
- * Date: 	17.03.2019
+ * Author:  Daniel Gachet
+ * Date:    17.03.2019
  */
 
 #include "am335x_spi.h"
@@ -111,11 +111,10 @@ static const enum am335x_mux_spi_modules spi2mux[] = {
  * implementation of the public methods
  * -------------------------------------------------------------------------- */
 
-void am335x_spi_init(
-    enum am335x_spi_controllers ctrl,
-    enum am335x_spi_channels channel,
-    uint32_t bus_speed,
-    uint32_t word_len)
+void am335x_spi_init(enum am335x_spi_controllers ctrl,
+                     enum am335x_spi_channels channel,
+                     uint32_t bus_speed,
+                     uint32_t word_len)
 {
     static bool is_initialized = false;
 
@@ -132,10 +131,12 @@ void am335x_spi_init(
             ;
 
         // configure clock activity and idle mode
-        spi->sysconfig = SYSCONFIG_SIDLEMODE_NOIDLE | SYSCONFIG_CLKACTIVITY_BOTH;
+        spi->sysconfig =
+            SYSCONFIG_SIDLEMODE_NOIDLE | SYSCONFIG_CLKACTIVITY_BOTH;
 
         // configure module contoller
-        // module is configured after the channel to avoid glitch on chip select signal
+        // module is configured after the channel to avoid glitch on chip select
+        // signal
         spi->modulctrl = (0 << 8)     // fifo managed with ctrl register
                          | (0 << 7)   // multiword disabled
                          | (1 << 4)   // initial spi delay = 4 spi clock
@@ -168,14 +169,14 @@ void am335x_spi_init(
     }
 
     // configure channel (tx & rx fifo disabled)
-    chan->chconf = (clkg << 29)             // clock granularity
-                   | (3 << 25)              // chip select time control 2.5 cycles
-                   | (0 << 21)              // spienslv = 0
-                   | (0 << 20)              // force = 0
-                   | (0 << 19)              // turbo = 0
-                   | (1 << 16)              // TX on D1, RX on D0
-                   | (0 << 14)              // DMA transfer disabled
-                   | (0 << 12)              // TX + RX mode
+    chan->chconf = (clkg << 29)  // clock granularity
+                   | (3 << 25)   // chip select time control 2.5 cycles
+                   | (0 << 21)   // spienslv = 0
+                   | (0 << 20)   // force = 0
+                   | (0 << 19)   // turbo = 0
+                   | (1 << 16)   // TX on D1, RX on D0
+                   | (0 << 14)   // DMA transfer disabled
+                   | (0 << 12)   // TX + RX mode
                    | ((word_len - 1) << 7)  // spi word len
                    | (1 << 6)               // spien polarity = low
                    | (clkd << 2)            // frequency diviver
@@ -191,13 +192,12 @@ void am335x_spi_init(
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_spi_read_b(
-    enum am335x_spi_controllers ctrl,
-    enum am335x_spi_channels channel,
-    uint8_t cmd_word,
-    uint8_t nop_word,
-    uint8_t* buffer,
-    size_t buffer_len)
+int am335x_spi_read_b(enum am335x_spi_controllers ctrl,
+                      enum am335x_spi_channels channel,
+                      uint8_t cmd_word,
+                      uint8_t nop_word,
+                      uint8_t* buffer,
+                      size_t buffer_len)
 {
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
@@ -217,28 +217,30 @@ int am335x_spi_read_b(
     }
 
     while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                                                              // wait until transfer complete
-    chan->chctrl &= ~CHCTRL_EN;                                        // disable channel
-    chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 28) | (1 << 20));  // restore chconf
+        ;                        // wait until transfer complete
+    chan->chctrl &= ~CHCTRL_EN;  // disable channel
+    chan->chconf &=
+        ~((3 << 12) | (1 << 27) | (1 << 28) | (1 << 20));  // restore chconf
 
     return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_spi_write_b(
-    enum am335x_spi_controllers ctrl,
-    enum am335x_spi_channels channel,
-    const uint8_t* buffer,
-    size_t buffer_len)
+int am335x_spi_write_b(enum am335x_spi_controllers ctrl,
+                       enum am335x_spi_channels channel,
+                       const uint8_t* buffer,
+                       size_t buffer_len)
 {
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
-    spi->irqstatus = -1;                                // clear all pending status flags
-    spi->xferlevel = (buffer_len << 16);                // configure number of word to be transferred
-    chan->chconf |= (2 << 12) | (1 << 27) | (1 << 20);  // txonly, txfifo enabled, force spien
-    chan->chctrl |= CHCTRL_EN;                          // enable channel
+    spi->irqstatus = -1;  // clear all pending status flags
+    spi->xferlevel =
+        (buffer_len << 16);  // configure number of word to be transferred
+    chan->chconf |= (2 << 12) | (1 << 27) |
+                    (1 << 20);  // txonly, txfifo enabled, force spien
+    chan->chctrl |= CHCTRL_EN;  // enable channel
 
     while (buffer_len > 0) {
         while ((chan->chstat & CHSTAT_TXFFF) != 0)
@@ -251,27 +253,28 @@ int am335x_spi_write_b(
     while ((spi->irqstatus & (1 << 17)) == 0)
         ;  // wait until transfer complete
     while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                                                  // wait until transfer complete
-    chan->chctrl &= ~CHCTRL_EN;                            // disable channel
+        ;                        // wait until transfer complete
+    chan->chctrl &= ~CHCTRL_EN;  // disable channel
     chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
     spi->xferlevel = 0;
 
     return 0;
 }
 
-int am335x_spi_write_w(
-    enum am335x_spi_controllers ctrl,
-    enum am335x_spi_channels channel,
-    const uint32_t* buffer,
-    uint32_t buffer_len)
+int am335x_spi_write_w(enum am335x_spi_controllers ctrl,
+                       enum am335x_spi_channels channel,
+                       const uint32_t* buffer,
+                       uint32_t buffer_len)
 {
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
-    spi->irqstatus = -1;                                // clear all pending status flags
-    spi->xferlevel = (buffer_len << 16);                // configure number of word to be transferred
-    chan->chconf |= (2 << 12) | (1 << 27) | (1 << 20);  // txonly, txfifo enabled, force spien
-    chan->chctrl |= CHCTRL_EN;                          // enable channel
+    spi->irqstatus = -1;  // clear all pending status flags
+    spi->xferlevel =
+        (buffer_len << 16);  // configure number of word to be transferred
+    chan->chconf |= (2 << 12) | (1 << 27) |
+                    (1 << 20);  // txonly, txfifo enabled, force spien
+    chan->chctrl |= CHCTRL_EN;  // enable channel
 
     while (buffer_len > 0) {
         while ((chan->chstat & CHSTAT_TXFFF) != 0)
@@ -283,8 +286,8 @@ int am335x_spi_write_w(
     while ((spi->irqstatus & (1 << 17)) == 0)
         ;  // wait until transfer complete
     while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                                                  // wait until transfer complete
-    chan->chctrl &= ~CHCTRL_EN;                            // disable channel
+        ;                        // wait until transfer complete
+    chan->chctrl &= ~CHCTRL_EN;  // disable channel
     chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
     spi->xferlevel = 0;
 

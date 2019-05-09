@@ -3,28 +3,28 @@
 #define AM335X_CLOCK_H
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x Clocking Driver 
+ * Abstract: AM335x Clocking Driver
  *
- * Purpose:	This module implements basic services to drive the AM335x 
- * 			clocking module.
+ * Purpose: This module implements basic services to drive the AM335x
+ *          clocking module.
  *
- * Author: 	Daniel Gachet
- * Date: 	28.11.2016
+ * Author:  Daniel Gachet
+ * Date:    28.11.2016
  */
 
 /**
@@ -106,37 +106,44 @@ extern void am335x_clock_enable_l3_l4wkup(void);
 /**
  * method to enable the clock instance for a specific uart.
  */
-extern void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module);
+extern void am335x_clock_enable_uart_module(
+    enum am335x_clock_uart_modules module);
 
 /**
  * method to enable the clock instance for a specific gpio module.
  */
-extern void am335x_clock_enable_gpio_module(enum am335x_clock_gpio_modules module);
+extern void am335x_clock_enable_gpio_module(
+    enum am335x_clock_gpio_modules module);
 
 /**
  * method to enable the clock instance for a specific i2c module.
  */
-extern void am335x_clock_enable_i2c_module(enum am335x_clock_i2c_modules module);
+extern void am335x_clock_enable_i2c_module(
+    enum am335x_clock_i2c_modules module);
 
 /**
  * method to enable the clock instance for a specific spi module.
  */
-extern void am335x_clock_enable_spi_module(enum am335x_clock_spi_modules module);
+extern void am335x_clock_enable_spi_module(
+    enum am335x_clock_spi_modules module);
 
 /**
  * method to enable the clock instance for a specific timer module.
  */
-extern void am335x_clock_enable_timer_module(enum am335x_clock_timer_modules module);
+extern void am335x_clock_enable_timer_module(
+    enum am335x_clock_timer_modules module);
 
 /**
  * method to enable the clock instance for a specific mmc module.
  */
-extern void am335x_clock_enable_mmc_module(enum am335x_clock_mmc_modules module);
+extern void am335x_clock_enable_mmc_module(
+    enum am335x_clock_mmc_modules module);
 
 /**
  * method to enable the clock instance for a specific epwm module.
  */
-extern void am335x_clock_enable_epwm_module(enum am335x_clock_epwm_modules module);
+extern void am335x_clock_enable_epwm_module(
+    enum am335x_clock_epwm_modules module);
 
 /**
  * method to enable the clock instance for EDMA

@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems Laboratory
+ * Project: HEIA-FR / Embedded Systems Laboratory
  *
  * Abstract: Basic Virtual File System Services
  *
- * Purpose:	This module implements basic services for a virtual file system
+ * Purpose: This module implements basic services for a virtual file system
  *
- * Author: 	Daniel Gachet
- * Date: 	08.05.2019
+ * Author:  Daniel Gachet
+ * Date:    08.05.2019
  */
 
 /* GNU ARM Toolchain & newlib: system calls */
@@ -33,8 +33,8 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "dirent.h"
 #include "bbb_fs.h"
+#include "dirent.h"
 #include "path.h"
 #include "vfs.h"
 
@@ -96,7 +96,7 @@ int _isatty(int fd) { return f[fd].fops->isatty(&f[fd]); }
 
 int _close(int fd)
 {
-    int res = f[fd].fops->close(&f[fd]);
+    int res    = f[fd].fops->close(&f[fd]);
     f[fd].fops = 0;
     return res;
 }
@@ -110,10 +110,7 @@ int fcntl(int fd, int cmd, ...)
     return res;
 }
 
-int _fstat(int fd, struct stat* st)
-{
-    return f[fd].fops->fstat(&f[fd], st);
-}
+int _fstat(int fd, struct stat* st) { return f[fd].fops->fstat(&f[fd], st); }
 
 int _stat(const char* file, struct stat* st)
 {

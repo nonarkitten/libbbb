@@ -16,15 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems Laboratory
+ * Project: HEIA-FR / Embedded Systems Laboratory
  *
  * Abstract:Basic Virtual File System Services
  *
- * Purpose:	This module provides services to handle pathes for directories
- *			of the Mini-Os virtual file system.
+ * Purpose: This module provides services to handle pathes for directories
+ *          of the Mini-Os virtual file system.
  *
- * Author:	Daniel Gachet
- * Date: 	08.05.2019
+ * Author:  Daniel Gachet
+ * Date:    08.05.2019
  */
 
 #include <stddef.h>
@@ -78,7 +78,8 @@ extern const char* path_build_full(const char* path);
  * @param path path from which full path is requested
  * @return full path
  */
-extern const char* path_build_full_r(char* buf, size_t buf_sz,
+extern const char* path_build_full_r(char* buf,
+                                     size_t buf_sz,
                                      const char* path);
 
 #endif

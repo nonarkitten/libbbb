@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,15 +16,15 @@
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
  *
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x I2C Driver 
+ * Abstract: AM335x I2C Driver
  *
- * Purpose:	This module implements basic services to drive the AM335x I2C
- *			controller.
+ * Purpose: This module implements basic services to drive the AM335x I2C
+ *          controller.
  *
- * Author: 	Daniel Gachet
- * Date: 	03.07.2015
+ * Author:  Daniel Gachet
+ * Date:    03.07.2015
  */
 
 #include "am335x_i2c.h"
@@ -144,21 +144,21 @@ struct am335x_i2c_ctrl {
 // am335x uart controllers memory mapped access register pointers
 static volatile struct am335x_i2c_ctrl* i2c_ctrl[] = {
     (struct am335x_i2c_ctrl*)0x44e0B000,
-    //	(struct am335x_i2c_ctrl*)0x4802a000,
+    //  (struct am335x_i2c_ctrl*)0x4802a000,
     (struct am335x_i2c_ctrl*)0x4819c000,
 };
 
 // table to convert uart interface to clock module number
 static const enum am335x_clock_i2c_modules i2c2clock[] = {
     AM335X_CLOCK_I2C0,
-    //	AM335X_CLOCK_I2C1,
+    //  AM335X_CLOCK_I2C1,
     AM335X_CLOCK_I2C2,
 };
 
 // table to convert uart interface to clock module number
 static const enum am335x_mux_i2c_modules i2c2mux[] = {
     AM335X_MUX_I2C0,
-    //	AM335X_MUX_I2C1,
+    //  AM335X_MUX_I2C1,
     AM335X_MUX_I2C2,
 };
 
@@ -198,9 +198,7 @@ static int wait_for_status(volatile struct am335x_i2c_ctrl* i2c, int bit)
  * implementation of the public methods
  * -------------------------------------------------------------------------- */
 
-void am335x_i2c_init(
-    enum am335x_i2c_controllers ctrl,
-    uint32_t bus_speed)
+void am335x_i2c_init(enum am335x_i2c_controllers ctrl, uint32_t bus_speed)
 {
     volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
 
@@ -231,12 +229,11 @@ void am335x_i2c_init(
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_i2c_read(
-    enum am335x_i2c_controllers ctrl,
-    uint8_t chip_id,
-    uint8_t reg,
-    uint8_t* data,
-    uint16_t data_len)
+int am335x_i2c_read(enum am335x_i2c_controllers ctrl,
+                    uint8_t chip_id,
+                    uint8_t reg,
+                    uint8_t* data,
+                    uint16_t data_len)
 {
     volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
 
@@ -265,8 +262,7 @@ int am335x_i2c_read(
 
     // wait until transfer complete and check if done correctly
     if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0)
-            return -1;
+        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0) return -1;
     }
 
     // --- read specified number of data bytes
@@ -293,12 +289,11 @@ int am335x_i2c_read(
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_i2c_write(
-    enum am335x_i2c_controllers ctrl,
-    uint8_t chip_id,
-    uint8_t reg,
-    const uint8_t* data,
-    uint16_t data_len)
+int am335x_i2c_write(enum am335x_i2c_controllers ctrl,
+                     uint8_t chip_id,
+                     uint8_t reg,
+                     const uint8_t* data,
+                     uint16_t data_len)
 {
     volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
 
@@ -338,8 +333,7 @@ int am335x_i2c_write(
 
     // wait until transfer complete and check if done correctly
     if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0)
-            return -1;
+        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0) return -1;
     }
 
     // acknowlegde all status information
@@ -350,9 +344,7 @@ int am335x_i2c_write(
 
 /* -------------------------------------------------------------------------- */
 
-bool am335x_i2c_probe(
-    enum am335x_i2c_controllers ctrl,
-    uint8_t chip_id)
+bool am335x_i2c_probe(enum am335x_i2c_controllers ctrl, uint8_t chip_id)
 {
     volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
     bool found                           = false;

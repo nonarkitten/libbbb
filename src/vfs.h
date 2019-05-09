@@ -16,15 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems Laboratory
+ * Project: HEIA-FR / Embedded Systems Laboratory
  *
  * Abstract: Basic Virtual File System Services
  *
- * Purpose:	This module implements basic services for a virtual file
- * 			system
+ * Purpose: This module implements basic services for a virtual file
+ *          system
  *
- * Author: 	Daniel Gachet
- * Date: 	08.05.2019
+ * Author:  Daniel Gachet
+ * Date:    08.05.2019
  */
 
 #include <fcntl.h>
@@ -60,6 +60,7 @@ struct vfs_dir {
     struct vfs_dir_ops* dops;
     const char* name;
     dir_t* dirp;
+    struct vfs_dnode* dnode;
 };
 
 struct vfs_dir_ops {

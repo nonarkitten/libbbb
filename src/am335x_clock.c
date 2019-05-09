@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,16 @@
  *
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
- * 
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x Clocking Driver 
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Purpose:	This module implements basic services to drive the AM335x 
- * 			clocking module.
+ * Abstract: AM335x Clocking Driver
  *
- * Author: 	Daniel Gachet
- * Date: 	03.08.2016
+ * Purpose: This module implements basic services to drive the AM335x
+ *          clocking module.
+ *
+ * Author:  Daniel Gachet
+ * Date:    03.08.2016
  */
 
 #include "am335x_clock.h"
@@ -345,7 +345,8 @@ void am335x_clock_enable_l3_l4wkup(void)
 
     // wait until modules are active
     wait4bit(&per->l3_clkstctrl, L3_CLKSTCTRL_CLKACTIVITY_L3_GCLK);
-    /// GAC wait4bit (&per->ocpwp_l3_clkstctrl, OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK);
+    /// GAC wait4bit (&per->ocpwp_l3_clkstctrl,
+    ///OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK);
     wait4bit(&per->l3s_clkstctrl, L3S_CLKSTCTRL_CLKACTIVITY_L3S_GCLK);
 
     // wake-up regions
@@ -358,7 +359,8 @@ void am335x_clock_enable_l3_l4wkup(void)
     wait4bit(&wkup->l3_aon_clkstctrl, L3_AON_CLKSTCTRL_CLKACTIVITY_L3_AON_GCLK);
     wait4mode(&wkup->wkup_l4wkup_clkctrl);
     wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_L4_WKUP_GCLK);
-    wait4bit(&wkup->l4_wkup_aon_clkstctrl, L4_WKUP_AON_CLKSTCTRL_CLKACTIVITY_L4_WKUP_AON_GCLK);
+    wait4bit(&wkup->l4_wkup_aon_clkstctrl,
+             L4_WKUP_AON_CLKSTCTRL_CLKACTIVITY_L4_WKUP_AON_GCLK);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -369,7 +371,8 @@ void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module)
         case AM335X_CLOCK_UART0:
             // enable uart0 module clock & wait until performed
             enable_module(&wkup->wkup_uart0_clkctrl);
-            wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_UART0_GFCLK);
+            wait4bit(&wkup->wkup_clkstctrl,
+                     WKUP_CLKSTCTRL_CLKACTIVITY_UART0_GFCLK);
             break;
 
         case AM335X_CLOCK_UART1:
@@ -400,7 +403,8 @@ void am335x_clock_enable_gpio_module(enum am335x_clock_gpio_modules module)
     switch (module) {
         case AM335X_CLOCK_GPIO0:
             enable_module(&wkup->wkup_gpio0_clkctrl);
-            wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_GPIO0_GDBCLK);
+            wait4bit(&wkup->wkup_clkstctrl,
+                     WKUP_CLKSTCTRL_CLKACTIVITY_GPIO0_GDBCLK);
             setbit(&wkup->wkup_gpio0_clkctrl, OPTFCLKEN_GPIOX_GDBCLK);
             break;
 
@@ -428,7 +432,8 @@ void am335x_clock_enable_i2c_module(enum am335x_clock_i2c_modules module)
     switch (module) {
         case AM335X_CLOCK_I2C0:
             enable_module(&wkup->wkup_i2c0_clkctrl);
-            wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_I2C0_GFCLK);
+            wait4bit(&wkup->wkup_clkstctrl,
+                     WKUP_CLKSTCTRL_CLKACTIVITY_I2C0_GFCLK);
             break;
 
         case AM335X_CLOCK_I2C1:
@@ -463,12 +468,14 @@ void am335x_clock_enable_timer_module(enum am335x_clock_timer_modules module)
     switch (module) {
         case AM335X_CLOCK_TIMER0:
             enable_module(&wkup->wkup_timer0_clkctrl);
-            wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_TIMER0_GFCLK);
+            wait4bit(&wkup->wkup_clkstctrl,
+                     WKUP_CLKSTCTRL_CLKACTIVITY_TIMER0_GFCLK);
             break;
 
         case AM335X_CLOCK_TIMER1:
             enable_module(&wkup->wkup_timer1_clkctrl);
-            wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_TIMER1_GFCLK);
+            wait4bit(&wkup->wkup_clkstctrl,
+                     WKUP_CLKSTCTRL_CLKACTIVITY_TIMER1_GFCLK);
             dpll->clksel_timer1ms_clk = 0x0;
             break;
 
@@ -504,7 +511,8 @@ void am335x_clock_enable_timer_module(enum am335x_clock_timer_modules module)
     }
 }
 
-/* ----------------------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------------------
+ */
 
 void am335x_clock_enable_mmc_module(enum am335x_clock_mmc_modules module)
 {
@@ -512,7 +520,8 @@ void am335x_clock_enable_mmc_module(enum am335x_clock_mmc_modules module)
         case AM335X_CLOCK_MMC0:
             // enable clock for the given module
             enable_module(&per->mmc0_clkctrl);
-            // This field indicates the state of the MMC_GCLK clock in the domain
+            // This field indicates the state of the MMC_GCLK clock in the
+            // domain
             wait4bit(&per->l3_clkstctrl, L3_CLKSTCTRL_CLKACTIVITY_MMC_FCLK);
             break;
 
@@ -528,7 +537,8 @@ void am335x_clock_enable_mmc_module(enum am335x_clock_mmc_modules module)
     }
 }
 
-/* ----------------------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------------------
+ */
 
 void am335x_clock_enable_epwm_module(enum am335x_clock_epwm_modules module)
 {
@@ -551,7 +561,8 @@ void am335x_clock_enable_epwm_module(enum am335x_clock_epwm_modules module)
     }
 }
 
-/* ----------------------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------------------
+ */
 
 void am335x_clock_enable_edma_module()
 {
@@ -582,33 +593,43 @@ void am335x_clock_enable_edma_module()
     *addr = (uint32_t)0x00000028;
 
     // wait for functionnal mode ACK
-    while ((per->tpcc_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) != CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
+    while ((per->tpcc_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) !=
+           CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
         ;
 
-    while ((per->tptc0_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) != CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
+    while ((per->tptc0_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) !=
+           CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
         ;
-    while ((per->tptc0_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) != CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
-        ;
-
-    while ((per->tptc1_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) != CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
-        ;
-    while ((per->tptc1_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) != CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
+    while ((per->tptc0_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) !=
+           CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
         ;
 
-    while ((per->tptc2_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) != CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
+    while ((per->tptc1_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) !=
+           CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
         ;
-    while ((per->tptc2_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) != CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
+    while ((per->tptc1_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) !=
+           CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
+        ;
+
+    while ((per->tptc2_clkctrl & CM_PER_TPCC_CLKCTRL_IDLEST) !=
+           CM_PER_TPCC_CLKCTRL_IDLEST_FUNC)
+        ;
+    while ((per->tptc2_clkctrl & CM_PER_TPCC_CLKCTRL_STBYST) !=
+           CM_PER_TPCC_CLKCTRL_STBYST_FUNC)
         ;
 }
 
-/* ----------------------------------------------------------------------------------- */
+/* -----------------------------------------------------------------------------------
+ */
 
 void am335x_clock_enable_cpsw_module(void)
 {
     wkup_module(&per->cpgmac0_clkctrl);
-    while ((per->cpgmac0_clkctrl & CM_PER_CPGMAC0_CLKCTRL_IDLEST) != CM_PER_CPGMAC0_CLKCTRL_IDLEST_FUNC)
+    while ((per->cpgmac0_clkctrl & CM_PER_CPGMAC0_CLKCTRL_IDLEST) !=
+           CM_PER_CPGMAC0_CLKCTRL_IDLEST_FUNC)
         ;
 
     wkup_module(&per->cpsw_clkstctrl);
-    wait4bit(&per->cpsw_clkstctrl, CM_PER_CPSW_CLKSTCTRL_CLKACTIVITY_CPSW_125MHZ_GCLK);
+    wait4bit(&per->cpsw_clkstctrl,
+             CM_PER_CPSW_CLKSTCTRL_CLKACTIVITY_CPSW_125MHZ_GCLK);
 }

@@ -3,29 +3,29 @@
 #define AM335X_UART_H
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver 
+ * Abstract: AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver
  *
- * Purpose:	This module implements basic services to drive the AM335x UART
- *			controller as serial user interface mainly used by the standard 
- *			input/output functions of the standard C library.
+ * Purpose: This module implements basic services to drive the AM335x UART
+ *          controller as serial user interface mainly used by the standard
+ *          input/output functions of the standard C library.
  *
- * Author: 	Daniel Gachet
- * Date: 	03.07.2015
+ * Author:  Daniel Gachet
+ * Date:    03.07.2015
  */
 
 #include <stdbool.h>
@@ -43,14 +43,14 @@ enum am335x_uart_controllers {
     AM335X_UART5,
 };
 
-/** 
+/**
  * method to initialize a specific am335x controller to work as a serial line.
  * by default the line will be configured as follow:
  *   - databits    : 8
  *   - stop bit    : 1
  *   - parity      : none
  *   - baudrate    : 115200
- *   - flowcontrol : none 
+ *   - flowcontrol : none
  *
  * @param ctrl am335x uart controller number
  */
@@ -62,12 +62,11 @@ extern void am335x_uart_init(enum am335x_uart_controllers ctrl);
  * @param ctrl am335x uart controller number
  * @param baudrate terminal baudrate value in bit/s
  */
-extern void am335x_uart_set_baudrate(
-    enum am335x_uart_controllers ctrl,
-    uint32_t baudrate);
+extern void am335x_uart_set_baudrate(enum am335x_uart_controllers ctrl,
+                                     uint32_t baudrate);
 
-/** 
- * method to test if a character is available 
+/**
+ * method to test if a character is available
  *
  * @param ctrl am335x uart controller number
  * @return true if character available, false otherwise
@@ -90,8 +89,6 @@ extern int am335x_uart_read(enum am335x_uart_controllers ctrl);
  * @param ctrl am335x uart controller number
  * @param c character to send on the serial interface
  */
-extern void am335x_uart_write(
-    enum am335x_uart_controllers ctrl,
-    int c);
+extern void am335x_uart_write(enum am335x_uart_controllers ctrl, int c);
 
 #endif

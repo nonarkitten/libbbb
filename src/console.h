@@ -16,14 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems Laboratory
+ * Project: HEIA-FR / Embedded Systems Laboratory
  *
  * Abstract: VFS - Console
  *
- * Purpose:	This module implements a device console.
+ * Purpose: This module implements a device console.
  *
- * Author: 	Daniel Gachet
- * Date: 	08.05.2019
+ * Author:  Daniel Gachet
+ * Date:    08.05.2019
  */
 
 /**

@@ -16,36 +16,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems 2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 2 Laboratory
  *
  * Abstract: OLED-C Click Board (SPEPS114A - LCD)
  *
- * Purpose:	This module provides a basic driver for the OLED-C click board.
- *			This driver is customized to run with the HEIA-FR Beaglebone 
- *			Black in cape 2 (default).
+ * Purpose: This module provides a basic driver for the OLED-C click board.
+ *          This driver is customized to run with the HEIA-FR Beaglebone
+ *          Black in cape 2 (default).
  *
- * Author: 	Daniel Gachet
- * Date: 	05.04.2019
+ * Author:  Daniel Gachet
+ * Date:    05.04.2019
  */
 
 #include <stdint.h>
 #include <stdlib.h>
 
-enum oled_versions {OLED_V100, OLED_V101};
+enum oled_versions { OLED_V100, OLED_V101 };
 
 /**
  * each pixel is described with two uin32t_t words in big endian format, i.e.
     hword = rgb565_value >> 8
-	lword = rgb565_value & 0xff
+    lword = rgb565_value & 0xff
 */
 struct pixel {
-	uint32_t hword; // rgb565_value >> 8
-	uint32_t lword; // rgb565_value & 0xff
+    uint32_t hword;  // rgb565_value >> 8
+    uint32_t lword;  // rgb565_value & 0xff
 };
 
 struct pixel_b {
-	uint8_t hword; // rgb565_value >> 8
-	uint8_t lword; // rgb565_value & 0xff
+    uint8_t hword;  // rgb565_value >> 8
+    uint8_t lword;  // rgb565_value & 0xff
 };
 
 /**
@@ -62,18 +62,20 @@ extern void oled_init(enum oled_versions version);
 
 /**
  * method to define a memory area(address) to write a display data
- * 
+ *
  *        +--------+ x2/y2
  *        |  area  |
  * x1/y1  +--------+
- * 
+ *
  * @param x1 coordinate
  * @param x2 coordinate
  * @param y1 coordinate
- * @param y2 coordinate 
+ * @param y2 coordinate
  */
-extern void oled_memory_size(uint32_t x1, uint32_t x2, uint32_t y1, uint32_t y2);
-
+extern void oled_memory_size(uint32_t x1,
+                             uint32_t x2,
+                             uint32_t y1,
+                             uint32_t y2);
 
 /**
  * method to send color for 1 pixel within previously defined memory area
@@ -81,13 +83,12 @@ extern void oled_memory_size(uint32_t x1, uint32_t x2, uint32_t y1, uint32_t y2)
  */
 extern void oled_color(uint32_t color);
 
-
 /**
  * method to send an image within previously defined memory area
- * @param image image described in rgb565 pixels. 
+ * @param image image described in rgb565 pixels.
  * @param nb_pixels number of pixels of the image
  */
-extern void oled_send_image (struct pixel* image, size_t nb_pixels);
-extern void oled_send_image_b (struct pixel_b* image, size_t nb_pixels);
+extern void oled_send_image(struct pixel* image, size_t nb_pixels);
+extern void oled_send_image_b(struct pixel_b* image, size_t nb_pixels);
 
 #endif

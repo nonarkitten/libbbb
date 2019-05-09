@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,17 @@
  *
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
- * 
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver 
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Purpose:	This module implements basic services to drive the AM335x UART
- *			as serial user interface mainly used by the standard input/output 
- *			functions of the standard C library
+ * Abstract: AM335x Universal Asynchronous Receiver/Transmitter (UART) Driver
  *
- * Author: 	Daniel Gachet
- * Date: 	03.07.2015
+ * Purpose: This module implements basic services to drive the AM335x UART
+ *          as serial user interface mainly used by the standard input/output
+ *          functions of the standard C library
+ *
+ * Author:  Daniel Gachet
+ * Date:    03.07.2015
  */
 
 #include "am335x_uart.h"
@@ -270,7 +270,8 @@ void am335x_uart_init(enum am335x_uart_controllers ctrl)
     uart->lcr    = LCR_OPMODE_A;     // switch to configuration mode A
     uint32_t mcr = uart->mcr;        // save mcr register
     uart->mcr    = MCR_TCR_TLR;      // enable access to TCR & TLR regs
-    uart->fcr    = FCR_RX_FIFO_TRIG_60CHAR | FCR_TX_FIFO_TRIG_56SPACES | FCR_TX_FIFO_CLEAR | FCR_RX_FIFO_CLEAR | FCR_FIFO_EN;
+    uart->fcr    = FCR_RX_FIFO_TRIG_60CHAR | FCR_TX_FIFO_TRIG_56SPACES |
+                FCR_TX_FIFO_CLEAR | FCR_RX_FIFO_CLEAR | FCR_FIFO_EN;
 
     uart->lcr = LCR_OPMODE_B;           // switch to configuration mode B
     uart->tlr = (60 << 4) + (56 << 0);  // set new fifo trigger level
@@ -284,9 +285,9 @@ void am335x_uart_init(enum am335x_uart_controllers ctrl)
     uart->mdr1 = MDR1_MODE_SELECT_DISABLED;  // disable uart
     uart->lcr  = LCR_OPMODE_B;               // switch to configuration mode B
     efr        = uart->efr;                  // save efr register
-    uart->efr  = EFR_ENHANCED_EN;            // enable writing to IER, FCR & MCR regs
-    uart->lcr  = LCR_OPMODE_NORMAL;          // switch mode access IER register
-    uart->ier  = 0x0;                        // clear IER bits
+    uart->efr  = EFR_ENHANCED_EN;    // enable writing to IER, FCR & MCR regs
+    uart->lcr  = LCR_OPMODE_NORMAL;  // switch mode access IER register
+    uart->ier  = 0x0;                // clear IER bits
     uart->lcr  = LCR_OPMODE_B;
     uart->efr  = efr;                   // restore efr register
     uart->lcr  = LCR_CHAR_LENGTH_8BIT;  // 8 bit char
@@ -297,9 +298,8 @@ void am335x_uart_init(enum am335x_uart_controllers ctrl)
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_uart_set_baudrate(
-    enum am335x_uart_controllers ctrl,
-    uint32_t baudrate)
+void am335x_uart_set_baudrate(enum am335x_uart_controllers ctrl,
+                              uint32_t baudrate)
 {
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
 
@@ -339,9 +339,7 @@ int am335x_uart_read(enum am335x_uart_controllers ctrl)
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_uart_write(
-    enum am335x_uart_controllers ctrl,
-    int c)
+void am335x_uart_write(enum am335x_uart_controllers ctrl, int c)
 {
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
     while ((uart->ssr & SSR_TX_FIFO_FULL) != 0)

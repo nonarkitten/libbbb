@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Project:	HEIA-FR / Embedded Systems Laboratory
+ * Project: HEIA-FR / Embedded Systems Laboratory
  *
  * Abstract: Basic Virtual File System Services
  *
- * Purpose:	This module implements basic services for a virtual file
- * 			system
+ * Purpose: This module implements basic services for a virtual file
+ *          system
  *
- * Author: 	Daniel Gachet
- * Date: 	20.02.2019
+ * Author:  Daniel Gachet
+ * Date:    20.02.2019
  */
 
 #include "vfs.h"

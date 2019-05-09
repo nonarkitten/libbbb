@@ -1,12 +1,12 @@
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,16 @@
  *
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
- * 
- * Project:	HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Abstract: AM335x GPIO Driver 
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
- * Purpose:	This module implements basic services to drive the AM335x 
- * 			GPIO module.
+ * Abstract: AM335x GPIO Driver
  *
- * Author: 	Daniel Gachet
- * Date: 	21.03.2016
+ * Purpose: This module implements basic services to drive the AM335x
+ *          GPIO module.
+ *
+ * Author:  Daniel Gachet
+ * Date:    21.03.2016
  */
 
 #include "am335x_gpio.h"
@@ -119,8 +119,8 @@ static const enum am335x_mux_gpio_modules gpio2mux[] = {
  * GPIO ISR Handler Structure Definition
  */
 struct gpio_isr_handlers {
-    am335x_gpio_handler_t routine;       /* application specific interrupt routine */
-    void* param;                         /* application specific parameter */
+    am335x_gpio_handler_t routine; /* application specific interrupt routine */
+    void* param;                   /* application specific parameter */
     enum am335x_gpio_pin_direction mode; /* pin operation mode */
 };
 static struct gpio_isr_handlers handlers[AM335X_GPIO_NB_MODULES][32];
@@ -132,10 +132,10 @@ static void udelay(int us_delay)
     while (us_delay > 0) {
         us_delay--;
         __asm(
-            "	mov r3, #1000/4;"
-            "1: 	nop;"
-            "	subs r3, #1;"
-            "	bne  1b;");
+            "   mov r3, #1000/4;"
+            "1:     nop;"
+            "   subs r3, #1;"
+            "   bne  1b;");
     }
 }
 
@@ -195,11 +195,10 @@ void* am335x_gpio_init(enum am335x_gpio_modules module)
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_setup_pin_in(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    enum am335x_gpio_pin_pull pin_pull,
-    bool has_to_be_debounced)
+void am335x_gpio_setup_pin_in(enum am335x_gpio_modules module,
+                              uint32_t pin_nr,
+                              enum am335x_gpio_pin_pull pin_pull,
+                              bool has_to_be_debounced)
 {
     volatile struct am335x_gpio_ctrl* gpio = am335x_gpio_init(module);
 
@@ -214,19 +213,17 @@ void am335x_gpio_setup_pin_in(
     }
 
     // configure am335x mux as gpio
-    am335x_mux_setup_gpio_pin(
-        gpio2mux[module],
-        pin_nr,
-        AM335X_MUX_PIN_IN,
-        (enum am335x_mux_gpio_pin_pull)pin_pull);
+    am335x_mux_setup_gpio_pin(gpio2mux[module],
+                              pin_nr,
+                              AM335X_MUX_PIN_IN,
+                              (enum am335x_mux_gpio_pin_pull)pin_pull);
 }
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_setup_pin_out(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    bool pin_state)
+void am335x_gpio_setup_pin_out(enum am335x_gpio_modules module,
+                               uint32_t pin_nr,
+                               bool pin_state)
 {
     // configure default value
     am335x_gpio_change_state(module, pin_nr, pin_state);
@@ -236,37 +233,31 @@ void am335x_gpio_setup_pin_out(
 
     // configure am335x mux as gpio
     am335x_mux_setup_gpio_pin(
-        gpio2mux[module],
-        pin_nr,
-        AM335X_MUX_PIN_IN,
-        AM335X_MUX_PULL_NONE);
+        gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN, AM335X_MUX_PULL_NONE);
 }
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_setup_pin(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    enum am335x_gpio_pin_direction pin_dir,
-    enum am335x_gpio_pin_pull pin_pull)
+void am335x_gpio_setup_pin(enum am335x_gpio_modules module,
+                           uint32_t pin_nr,
+                           enum am335x_gpio_pin_direction pin_dir,
+                           enum am335x_gpio_pin_pull pin_pull)
 {
     // configure pin direction
     am335x_gpio_set_pin_dir(module, pin_nr, pin_dir);
 
     // configure am335x mux as gpio
-    am335x_mux_setup_gpio_pin(
-        gpio2mux[module],
-        pin_nr,
-        AM335X_MUX_PIN_IN,
-        (enum am335x_mux_gpio_pin_pull)pin_pull);
+    am335x_mux_setup_gpio_pin(gpio2mux[module],
+                              pin_nr,
+                              AM335X_MUX_PIN_IN,
+                              (enum am335x_mux_gpio_pin_pull)pin_pull);
 }
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_set_pin_dir(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    enum am335x_gpio_pin_direction pin_dir)
+void am335x_gpio_set_pin_dir(enum am335x_gpio_modules module,
+                             uint32_t pin_nr,
+                             enum am335x_gpio_pin_direction pin_dir)
 {
     volatile struct am335x_gpio_ctrl* gpio = am335x_gpio_init(module);
 
@@ -288,10 +279,9 @@ void am335x_gpio_set_pin_dir(
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_change_state(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    bool pin_state)
+void am335x_gpio_change_state(enum am335x_gpio_modules module,
+                              uint32_t pin_nr,
+                              bool pin_state)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
     if (pin_state) {
@@ -303,9 +293,7 @@ void am335x_gpio_change_state(
 
 /* -------------------------------------------------------------------------- */
 
-bool am335x_gpio_get_state(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr)
+bool am335x_gpio_get_state(enum am335x_gpio_modules module, uint32_t pin_nr)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
     return (gpio->datain & (1 << pin_nr)) != 0;
@@ -313,10 +301,9 @@ bool am335x_gpio_get_state(
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_gpio_change_states(
-    enum am335x_gpio_modules module,
-    uint32_t pin_set,
-    bool pin_state)
+void am335x_gpio_change_states(enum am335x_gpio_modules module,
+                               uint32_t pin_set,
+                               bool pin_state)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
     if (pin_state) {
@@ -337,23 +324,23 @@ uint32_t am335x_gpio_get_states(enum am335x_gpio_modules module)
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-int am335x_gpio_attach(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    enum am335x_gpio_interrupt_modes mode,
-    bool has_to_be_debounced,
-    am335x_gpio_handler_t routine,
-    void* param)
+int am335x_gpio_attach(enum am335x_gpio_modules module,
+                       uint32_t pin_nr,
+                       enum am335x_gpio_interrupt_modes mode,
+                       bool has_to_be_debounced,
+                       am335x_gpio_handler_t routine,
+                       void* param)
 {
     int status = -1;
 
-    if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32) && (handlers[module][pin_nr].routine == 0)) {
+    if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32) &&
+        (handlers[module][pin_nr].routine == 0)) {
         handlers[module][pin_nr].routine = routine;
         handlers[module][pin_nr].param   = param;
         handlers[module][pin_nr].mode    = mode;
 
-        am335x_gpio_setup_pin_irq(module, pin_nr,
-                                  mode, has_to_be_debounced, AM335X_GPIO_PULL_NONE);
+        am335x_gpio_setup_pin_irq(
+            module, pin_nr, mode, has_to_be_debounced, AM335X_GPIO_PULL_NONE);
 
         gpio_ctrl[module]->irqstatus_set0 = (1 << pin_nr);
 
@@ -412,18 +399,16 @@ int am335x_gpio_vector(enum am335x_gpio_modules module)
     return -1;
 }
 
-int am335x_gpio_setup_pin_irq(
-    enum am335x_gpio_modules module,
-    uint32_t pin_nr,
-    enum am335x_gpio_interrupt_modes mode,
-    bool has_to_be_debounced,
-    enum am335x_gpio_pin_pull pin_pull)
+int am335x_gpio_setup_pin_irq(enum am335x_gpio_modules module,
+                              uint32_t pin_nr,
+                              enum am335x_gpio_interrupt_modes mode,
+                              bool has_to_be_debounced,
+                              enum am335x_gpio_pin_pull pin_pull)
 {
     int status = -1;
 
     if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32)) {
-        am335x_gpio_setup_pin_in(module, pin_nr,
-                                 pin_pull, has_to_be_debounced);
+        am335x_gpio_setup_pin_in(module, pin_nr, pin_pull, has_to_be_debounced);
 
         volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
         switch (mode) {
