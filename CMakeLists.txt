@@ -59,7 +59,7 @@ set(SOURCE_FILES
 	src/path.c
 	src/vfs.c)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -g")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 
 add_library(bbb ${SOURCE_FILES})
 target_include_directories(bbb PRIVATE src)
@@ -73,7 +73,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "3")
-set(CPACK_PACKAGE_VERSION_PATCH "1")
+set(CPACK_PACKAGE_VERSION_PATCH "2")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/*.sh")
 set(CPACK_SYSTEM_NAME "arm-none-eabi")
