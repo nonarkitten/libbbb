@@ -33,15 +33,15 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#include "bbb_fs.h"
-#include "dirent.h"
-#include "path.h"
-#include "vfs.h"
+#include "bbb/bbb_fs.h"
+#include "bbb/dirent.h"
+#include "bbb/path.h"
+#include "bbb/vfs.h"
 
-#include "console.h"
+#include "bbb/console.h"
 
 #if 1
-#include <am335x_console.h>
+#include "bbb/am335x_console.h"
 #define putstr(x) am335x_console_puts(x)
 #else
 #define putstr(x) printf(x)

@@ -27,9 +27,9 @@
  * Date:    03.07.2015
  */
 
-#include "am335x_i2c.h"
-#include "am335x_clock.h"
-#include "am335x_mux.h"
+#include "bbb/am335x_i2c.h"
+#include "bbb/am335x_clock.h"
+#include "bbb/am335x_mux.h"
 
 // define am335x i2c controller registers
 struct am335x_i2c_ctrl {

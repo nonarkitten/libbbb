@@ -27,7 +27,7 @@
  * Date:    03.08.2016
  */
 
-#include "am335x_clock.h"
+#include "bbb/am335x_clock.h"
 #include <stdint.h>
 #include <stdlib.h>
 

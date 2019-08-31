@@ -32,7 +32,7 @@
 #include <stdbool.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "dirent.h"
+#include "bbb/dirent.h"
 
 #define MAX_FILENAME 256
 

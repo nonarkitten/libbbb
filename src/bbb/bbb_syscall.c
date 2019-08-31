@@ -31,10 +31,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "am335x_clock.h"
-#include "am335x_console.h"
-#include "am335x_dmtimer1.h"
-#include "bbb_fs.h"
+#include "bbb/am335x_clock.h"
+#include "bbb/am335x_console.h"
+#include "bbb/am335x_dmtimer1.h"
+#include "bbb/bbb_fs.h"
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 //#define pr_debug(x...) printf(x)
