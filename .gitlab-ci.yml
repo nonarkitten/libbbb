@@ -1,4 +1,4 @@
-image: heiafr/arm-none-eabi-builder:latest
+image: registry.forge.hefr.ch/embsys/arm-none-eabi-builder:latest
 
 stages:
   - check
