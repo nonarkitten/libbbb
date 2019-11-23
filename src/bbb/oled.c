@@ -25,7 +25,7 @@
  *          device driver released for the STM32F10VC MCU.
  *
  * Author:  Daniel Gachet
- * Date:    05.04.2019
+ * Date:    23.11.2019
  */
 
 #include "bbb/am335x_gpio.h"
@@ -431,7 +431,7 @@ static void ssd1351_init()
 void oled_select_cape_1() { cape = CAPE_1; }
 
 // init sequence for 96x96 SEPS114A color module
-void oled_init(enum oled_versions version)
+void oled_init2(enum oled_versions version)
 {
     // init gpio interface
     am335x_gpio_init(spi[cape].en.gpio);
@@ -488,11 +488,6 @@ void oled_color(uint32_t color)
 
 // send image
 void oled_send_image(struct pixel* image, size_t nb_pixels)
-{
-    send_data_w(&image[0].hword, nb_pixels * 2);
-}
-// send image
-void oled_send_image_b(struct pixel_b* image, size_t nb_pixels)
 {
     send_data(&image[0].hword, nb_pixels * 2);
 }

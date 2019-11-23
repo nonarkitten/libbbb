@@ -25,7 +25,7 @@
  *          Black in cape 2 (default).
  *
  * Author:  Daniel Gachet
- * Date:    05.04.2019
+ * Date:    23.11.2019
  */
 
 #include <stdint.h>
@@ -34,19 +34,15 @@
 enum oled_versions { OLED_V100, OLED_V101 };
 
 /**
- * each pixel is described with two uin32t_t words in big endian format, i.e.
+ * each pixel is described with two uint8_t words in big endian format, i.e.
     hword = rgb565_value >> 8
     lword = rgb565_value & 0xff
 */
 struct pixel {
-    uint32_t hword;  // rgb565_value >> 8
-    uint32_t lword;  // rgb565_value & 0xff
-};
-
-struct pixel_b {
     uint8_t hword;  // rgb565_value >> 8
     uint8_t lword;  // rgb565_value & 0xff
 };
+#define pixel_b pixel
 
 /**
  * this method shall be called prior any other if the OLED Click Board
@@ -58,7 +54,8 @@ extern void oled_select_cape_1();
  * method to initialize the 96x96 OLED color module
  * @param version version number of the oled device
  */
-extern void oled_init(enum oled_versions version);
+extern void oled_init2(enum oled_versions version);
+#define oled_init(x) oled_init2(OLED_V101)
 
 /**
  * method to define a memory area(address) to write a display data
@@ -88,7 +85,7 @@ extern void oled_color(uint32_t color);
  * @param image image described in rgb565 pixels.
  * @param nb_pixels number of pixels of the image
  */
-extern void oled_send_image(struct pixel* image, size_t nb_pixels);
-extern void oled_send_image_b(struct pixel_b* image, size_t nb_pixels);
+extern void oled_send_image(struct pixel_b* image, size_t nb_pixels);
+#define oled_send_image_b oled_send_image
 
 #endif
