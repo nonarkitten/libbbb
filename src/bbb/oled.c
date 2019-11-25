@@ -464,7 +464,7 @@ void oled_init2(enum oled_versions version)
         seps114a_init();
     } else {
         oled_device = SSD1351;
-        spi_init(2000000);
+        spi_init(5000000);
         ssd1351_init();
     }
 }
