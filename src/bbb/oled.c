@@ -147,7 +147,10 @@ static inline void send_cmd_val2(uint8_t cmd, uint8_t val1, uint8_t val2)
     send_data(value, 2);
 }
 
-static inline void send_cmd_val3(uint8_t cmd, uint8_t val1, uint8_t val2, uint8_t val3)
+static inline void send_cmd_val3(uint8_t cmd, 
+                                 uint8_t val1, 
+                                 uint8_t val2, 
+                                 uint8_t val3)
 {
     send_cmd(cmd);
     uint8_t value[3] = {val1, val2, val3};
@@ -412,9 +415,6 @@ static void ssd1351_init()
     send_cmd_val(SSD1351_MUX_RATIO, SSD1351_DEFAULT_MUX_RATIO);
     send_cmd_val(SSD1351_SET_START_LINE, SSD1351_DEFAULT_START_LINE);
     send_cmd_val(SSD1351_SET_OFFSET, SSD1351_DEFAULT_OFFSET);
-    //    send_cmd_val(SSD1351_GPIO, 0x00);  // Disable GPIO pins
-    //    send_cmd_val(SSD1351_FUNCTION, 0x01);  // External VDD (0 = External, 1 = Internal)
-    //    send_cmd_val(SSD1351_PRECH_VOL, 0x17);
     send_cmd_val(SSD1351_VCOMH, SSD1351_DEFAULT_VCOMH);
     send_cmd_val(SSD1351_CLOCK_DIV, SSD1351_DEFAULT_DIVSET);
     send_cmd_val(SSD1351_SET_RESET_PRECH, SSD1351_DEFAULT_PRECHARGE);
