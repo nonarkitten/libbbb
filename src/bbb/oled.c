@@ -32,15 +32,13 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include "bbb/am335x_spi.h"
-
-#include "bbb/oled.h"
+#include <bbb/am335x_dmtimer1.h>
+#include <bbb/oled.h>
 
 static enum oled_devices {
     SSD1351,
     SEPS114A
-} oled_device =
-    //  SEPS114A;
-    SSD1351;
+} oled_device = SSD1351;
 
 enum capes {
     CAPE_1,
@@ -115,16 +113,6 @@ static enum capes cape = CAPE_2;
 
 // ----------------------------------------------------------------------------
 
-static int delay_ms(unsigned ms)
-{
-    for (int i = ms; i > 0; i--)
-        for (int j = 0; j < 1000; j++)
-            ;
-    return 0;
-}
-
-// ----------------------------------------------------------------------------
-
 static inline void spi_init(uint32_t freq)
 {
     am335x_spi_init(spi[cape].ctrl, spi[cape].chan, freq, 8);
@@ -133,11 +121,6 @@ static inline void spi_init(uint32_t freq)
 static inline void send_data(uint8_t* val, int nb)
 {
     am335x_spi_write_b(spi[cape].ctrl, spi[cape].chan, val, nb);
-}
-
-static inline void send_data_w(uint32_t* val, int nb)
-{
-    am335x_spi_write_w(spi[cape].ctrl, spi[cape].chan, val, nb);
 }
 
 static inline void send_cmd(uint8_t cmd)
@@ -158,7 +141,14 @@ static inline void send_cmd_val2(uint8_t cmd, uint8_t val1, uint8_t val2)
 {
     send_cmd(cmd);
     uint8_t value[2] = {val1, val2};
-    send_data(value, 1);
+    send_data(value, 2);
+}
+
+static inline void send_cmd_val3(uint8_t cmd, uint8_t val1, uint8_t val2, uint8_t val3)
+{
+    send_cmd(cmd);
+    uint8_t value[3] = {val1, val2, val3};
+    send_data(value, 3);
 }
 
 // ----------------------------------------------------------------------------
@@ -232,9 +222,9 @@ static void seps114a_init()
 
     // standby ON/OFF (wait for 5ms between on/off (min delay 1ms)
     send_cmd_val(SEPS114A_STANDBY_ON_OFF, 0x01);  // on
-    delay_ms(5);
+    am335x_dmtimer1_wait_ms(5);
     send_cmd_val(SEPS114A_STANDBY_ON_OFF, 0x00);  // off
-    delay_ms(5);
+    am335x_dmtimer1_wait_ms(5);
 
     // display turn off
     send_cmd_val(SEPS114A_DISPLAY_ON_OFF, 0x00);
@@ -318,112 +308,123 @@ static void seps114a_init()
 
 // -----------------------------------------------------------------------------
 
-// SSD1351 Commands
-enum ssd1351 {
-    SSD1351_SETCOLUMNADDRESS         = 0x15,
-    SSD1351_SETROWADDRESS            = 0x75,
-    SSD1351_WRITERAM                 = 0x5C,
-    SSD1351_READRAM                  = 0x5D,
-    SSD1351_COLORDEPTH               = 0xA0,
-    SSD1351_SETDISPLAYSTARTLINE      = 0xA1,
-    SSD1351_SETDISPLAYOFFSET         = 0xA2,
-    SSD1351_SETDISPLAYMODE_ALLOFF    = 0xA4,
-    SSD1351_SETDISPLAYMODE_ALLON     = 0xA5,
-    SSD1351_SETDISPLAYMODE_RESET     = 0xA6,
-    SSD1351_SETDISPLAYMODE_INVERT    = 0xA7,
-    SSD1351_FUNCTIONSELECTION        = 0xAB,
-    SSD1351_SLEEPMODE_DISPLAYOFF     = 0xAE,
-    SSD1351_SLEEPMODE_DISPLAYON      = 0xAF,
-    SSD1351_SETPHASELENGTH           = 0xB1,
-    SSD1351_ENHANCEDDRIVINGSCHEME    = 0xB2,
-    SSD1351_SETFRONTCLOCKDIV         = 0xB3,
-    SSD1351_SETSEGMENTLOWVOLTAGE     = 0xB4,
-    SSD1351_SETGPIO                  = 0xB5,
-    SSD1351_SETSECONDPRECHARGEPERIOD = 0xB6,
-    SSD1351_GRAYSCALELOOKUP          = 0xB8,
-    SSD1351_LINEARLUT                = 0xB9,
-    SSD1351_SETPRECHARGEVOLTAGE      = 0xBB,
-    SSD1351_SETVCOMHVOLTAGE          = 0xBE,
-    SSD1351_SETCONTRAST              = 0xC1,
-    SSD1351_MASTERCONTRAST           = 0xC7,
-    SSD1351_SETMUXRRATIO             = 0xCA,
-    SSD1351_NOP3                     = 0xD1,
-    SSD1351_NOP4                     = 0xE3,
-    SSD1351_SETCOMMANDLOCK           = 0xFD,
-    SSD1351_HORIZONTALSCROLL         = 0x96,
-    SSD1351_STOPMOVING               = 0x9E,
-    SSD1351_STARTMOVING              = 0x9F
-};
+// Font Direction
+#define SSD1351_FO_HORIZONTAL        0x00
+#define SSD1351_FO_VERTICAL          0x01
+#define SSD1351_FO_VERTICAL_COLUMN   0x02
+
+// OLED REMAMP SET
+#define SSD1351_RMP_INC_HOR          0x00
+#define SSD1351_RMP_INC_VER          0x01
+#define SSD1351_RMP_COLOR_NOR        0x00
+#define SSD1351_RMP_COLOR_REV        0x02
+#define SSD1351_RMP_SEQ_RGB          0x00
+#define SSD1351_RMP_SEQ_BGR          0x04
+#define SSD1351_RMP_SCAN_NOR         0x00
+#define SSD1351_RMP_SCAN_REV         0x10
+#define SSD1351_RMP_SPLIT_DISABLE    0x00
+#define SSD1351_RMP_SPLIT_ENABLE     0x20
+#define SSD1351_COLOR_65K            0x00
+#define SSD1351_COLOR_262K           0x80
+#define SSD1351_IMG_HEAD             0x06
+
+// Device Properties
+#define SSD1351_SCREEN_WIDTH    0x60
+#define SSD1351_SCREEN_HEIGHT   0x60
+#define SSD1351_SCREEN_SIZE     0x2400
+#define SSD1351_ROW_OFF         0x00
+#define SSD1351_COL_OFF         0x10
+
+// SSD1355 Commands
+#define SSD1351_SET_COL_ADDRESS    0x15
+#define SSD1351_SET_ROW_ADDRESS    0x75
+#define SSD1351_WRITE_RAM          0x5C
+#define SSD1351_READ_RAM           0x5D
+#define SSD1351_SET_REMAP          0xA0
+#define SSD1351_SET_START_LINE     0xA1
+#define SSD1351_SET_OFFSET         0xA2
+#define SSD1351_MODE_OFF           0xA4
+#define SSD1351_MODE_ON            0xA5
+#define SSD1351_MODE_NORMAL        0xA6
+#define SSD1351_MODE_INVERSE       0xA7
+#define SSD1351_FUNCTION           0xAB
+#define SSD1351_SLEEP_ON           0xAE
+#define SSD1351_SLEEP_OFF          0xAF
+#define SSD1351_NOP                0xB0
+#define SSD1351_SET_RESET_PRECH    0xB1
+#define SSD1351_ENHANCEMENT        0xB2
+#define SSD1351_CLOCK_DIV          0xB3
+#define SSD1351_VSL                0xB4
+#define SSD1351_GPIO               0xB5
+#define SSD1351_SETSEC_PRECH       0xB6
+#define SSD1351_GREY_SCALE         0xB8
+#define SSD1351_LUT                0xB9
+#define SSD1351_PRECH_VOL          0xBB
+#define SSD1351_VCOMH              0xBE
+#define SSD1351_CONTRAST           0xC1
+#define SSD1351_MASTER_CONTRAST    0xC7
+#define SSD1351_MUX_RATIO          0xCA
+#define SSD1351_COMMAND_LOCK       0xFD
+#define SSD1351_SCROLL_HOR         0x96
+#define SSD1351_START_MOV          0x9E
+#define SSD1351_STOP_MOV           0x9F
+
+
+#define SSD1351_DEFAULT_MUX_RATIO       95
+#define SSD1351_DEFAULT_START_LINE      0x80
+#define SSD1351_DEFAULT_OFFSET          0x20
+
+#define SSD1351_DEFAULT_OLED_LOCK       0x12
+#define SSD1351_DEFAULT_CMD_LOCK        0xB1
+#define SSD1351_DEFAULT_DIVSET          0xF1
+#define SSD1351_DEFAULT_PRECHARGE       0x32
+#define SSD1351_DEFAULT_VCOMH           0x05
+#define SSD1351_DEFAULT_MASTER_CONT     0xCF
+#define SSD1351_DEFAULT_PRECHARGE_2     0x01
+
+#define SSD1351_DEFAULT_REMAP (SSD1351_RMP_INC_HOR | SSD1351_RMP_COLOR_NOR | \
+                               SSD1351_RMP_SEQ_RGB | SSD1351_RMP_SCAN_REV | \
+                               SSD1351_RMP_SPLIT_ENABLE | SSD1351_COLOR_65K)
 
 static inline void ssd1351_dat(uint8_t value) { send_data(&value, 1); }
 
 static void ssd1351_set_area(uint32_t x1, uint32_t x2, uint32_t y1, uint32_t y2)
 {
-    send_cmd(SSD1351_WRITERAM);
-    send_cmd(SSD1351_SETCOLUMNADDRESS);
-    uint8_t x[2] = {x1 + 16, x2 + 16};
-    send_data(x, 2);
-
-    send_cmd(SSD1351_SETROWADDRESS);
-    uint8_t y[2] = {y1, y2};
-    send_data(y, 2);
-
-    send_cmd(SSD1351_WRITERAM);
+    send_cmd(SSD1351_WRITE_RAM);
+    send_cmd_val2(SSD1351_SET_COL_ADDRESS, x1 + 16, x2 + 16);
+    send_cmd_val2(SSD1351_SET_ROW_ADDRESS, y1, y2);
+    send_cmd(SSD1351_WRITE_RAM);
 }
 
 static void ssd1351_init()
 {
-    send_cmd(SSD1351_SETCOMMANDLOCK);
-    ssd1351_dat(0x12);  // Unlocked to enter commands
-    send_cmd(SSD1351_SETCOMMANDLOCK);
-    ssd1351_dat(0xB1);  // Make all commands accessible
-    send_cmd(SSD1351_SLEEPMODE_DISPLAYOFF);
-    send_cmd(SSD1351_SETFRONTCLOCKDIV);
-    ssd1351_dat(0xF1);  // was F1
-    send_cmd(SSD1351_SETMUXRRATIO);
-    ssd1351_dat(0x7f);  // 7f
-    send_cmd(SSD1351_COLORDEPTH);
-    ssd1351_dat(0x70);  // Bit 7:6 = 65,536 Colors, Bit 3 = BGR or RGB
-    send_cmd(SSD1351_SETCOLUMNADDRESS);
-    ssd1351_dat(0x00);
-    ssd1351_dat(0x7F);  // 7f
-    send_cmd(SSD1351_SETROWADDRESS);
-    ssd1351_dat(0x00);
-    ssd1351_dat(0x7F);  // 7f
-    send_cmd(SSD1351_SETDISPLAYSTARTLINE);
-    ssd1351_dat(0x00);
-    send_cmd(SSD1351_SETDISPLAYOFFSET);
-    ssd1351_dat(0x00);
-    send_cmd(SSD1351_SETGPIO);
-    ssd1351_dat(0x00);  // Disable GPIO pins
-    send_cmd(SSD1351_FUNCTIONSELECTION);
-    ssd1351_dat(0x01);  // External VDD (0 = External, 1 = Internal)
-    send_cmd(SSD1351_SETPHASELENGTH);
-    ssd1351_dat(0x32);
-    send_cmd(SSD1351_SETSEGMENTLOWVOLTAGE);
-    ssd1351_dat(0xA0);  // Enable External VSL
-    ssd1351_dat(0xB5);
-    ssd1351_dat(0x55);
-    send_cmd(SSD1351_SETPRECHARGEVOLTAGE);
-    ssd1351_dat(0x17);
-    send_cmd(SSD1351_SETVCOMHVOLTAGE);
-    ssd1351_dat(0x05);
-    send_cmd(SSD1351_SETCONTRAST);
-    ssd1351_dat(0xC8);
-    ssd1351_dat(0x80);
-    ssd1351_dat(0xC8);
-    send_cmd(SSD1351_MASTERCONTRAST);
-    ssd1351_dat(0x0F);  // Maximum contrast
-    send_cmd(SSD1351_SETSECONDPRECHARGEPERIOD);
-    ssd1351_dat(0x01);
-    send_cmd(SSD1351_SETDISPLAYMODE_RESET);
+    send_cmd_val(SSD1351_COMMAND_LOCK, SSD1351_DEFAULT_OLED_LOCK);
+    send_cmd_val(SSD1351_COMMAND_LOCK, SSD1351_DEFAULT_CMD_LOCK);
+    send_cmd(SSD1351_SLEEP_ON);
+    send_cmd_val(SSD1351_SET_REMAP, SSD1351_DEFAULT_REMAP);
+    send_cmd_val(SSD1351_MUX_RATIO, SSD1351_DEFAULT_MUX_RATIO);
+    send_cmd_val(SSD1351_SET_START_LINE, SSD1351_DEFAULT_START_LINE);
+    send_cmd_val(SSD1351_SET_OFFSET, SSD1351_DEFAULT_OFFSET);
+//    send_cmd_val(SSD1351_GPIO, 0x00);  // Disable GPIO pins
+//    send_cmd_val(SSD1351_FUNCTION, 0x01);  // External VDD (0 = External, 1 = Internal)
+//    send_cmd_val(SSD1351_PRECH_VOL, 0x17);
+    send_cmd_val(SSD1351_VCOMH, SSD1351_DEFAULT_VCOMH);
+    send_cmd_val(SSD1351_CLOCK_DIV, SSD1351_DEFAULT_DIVSET);
+    send_cmd_val(SSD1351_SET_RESET_PRECH, SSD1351_DEFAULT_PRECHARGE);
+    send_cmd_val(SSD1351_SETSEC_PRECH, SSD1351_DEFAULT_PRECHARGE_2);
+    send_cmd_val(SSD1351_MASTER_CONTRAST, SSD1351_DEFAULT_MASTER_CONT);
+    send_cmd_val3(SSD1351_CONTRAST, 0x8a, 0x51, 0x8a);
+    send_cmd_val3(SSD1351_VSL, 0xa0, 0xb5, 0x55);
+
+    send_cmd(SSD1351_MODE_NORMAL);
+    //send_cmd(SSD1351_SLEEP_ON);
 
     // Clear screen
     oled_memory_size(0, 95, 0, 95);
     for (int i = 0; i < 96 * 96; i++) oled_color(0x0000);
 
     // Turn the display on
-    send_cmd(SSD1351_SLEEPMODE_DISPLAYON);
+    send_cmd(SSD1351_SLEEP_OFF);
 }
 
 // --- public methods ----
@@ -433,6 +434,8 @@ void oled_select_cape_1() { cape = CAPE_1; }
 // init sequence for 96x96 SEPS114A color module
 void oled_init2(enum oled_versions version)
 {
+    am335x_dmtimer1_init();
+
     // init gpio interface
     am335x_gpio_init(spi[cape].en.gpio);
     am335x_gpio_init(spi[cape].rw.gpio);
@@ -445,18 +448,17 @@ void oled_init2(enum oled_versions version)
     bool rx   = am335x_gpio_get_state (AM335X_GPIO0,  30);
     printf ("\ntx=%d, rx=%d\n", tx, rx);
 #endif
-    am335x_gpio_setup_pin_out(spi[cape].en.gpio, spi[cape].en.pin, true);
-    delay_ms(100);
     am335x_gpio_setup_pin_out(spi[cape].rw.gpio, spi[cape].rw.pin, false);
     am335x_gpio_setup_pin_out(spi[cape].rst.gpio, spi[cape].rst.pin, true);
     am335x_gpio_setup_pin_out(spi[cape].dc.gpio, spi[cape].dc.pin, false);
 
-    // SEPS114A hard reset
-    delay_ms(40);
+    // Hard reset
+    am335x_dmtimer1_wait_ms(40);
     am335x_gpio_change_state(spi[cape].rst.gpio, spi[cape].rst.pin, false);
-    delay_ms(40);
+    am335x_dmtimer1_wait_ms(40);
     am335x_gpio_change_state(spi[cape].rst.gpio, spi[cape].rst.pin, true);
-    delay_ms(300);
+    am335x_gpio_setup_pin_out(spi[cape].en.gpio, spi[cape].en.pin, true);
+    am335x_dmtimer1_wait_ms(300);
 
     if (version == OLED_V100) {
         oled_device = SEPS114A;
