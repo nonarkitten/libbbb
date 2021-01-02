@@ -16,7 +16,10 @@
 # CMake file for libbbb
 #
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.13)
+
+set(CMAKE_TOOLCHAIN_FILE arm-none-eabi.cmake)
+
 project(libbbb)
 
 set(CMAKE_C_STANDARD 11)
