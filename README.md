@@ -7,7 +7,7 @@ This project is the system library (`libbbb`) for the Beaglebone Black used in t
 ```
 mkdir build
 cd build
-cmake -DCMAKE_TOOLCHAIN_FILE=arm-none-eabi.cmake ..
+cmake ..
 make
 ```
 
