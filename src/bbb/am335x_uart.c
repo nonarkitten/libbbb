@@ -234,7 +234,7 @@ static const enum am335x_clock_uart_modules uart2clock[] = {
 };
 
 // table to convert uart interface to clock module number
-static const enum am335x_clock_uart_modules uart2mux[] = {
+static const enum am335x_mux_uart_modules uart2mux[] = {
     AM335X_MUX_UART0,
     AM335X_MUX_UART1,
     AM335X_MUX_UART2,
