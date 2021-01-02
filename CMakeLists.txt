@@ -62,13 +62,19 @@ set(SOURCE_FILES
 	src/bbb/path.c
 	src/bbb/vfs.c)
 
+set(LD_SCRIPTS
+        ldscripts/bbb.ld
+        ldscripts/bbb_process.ld)
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0")
 
 add_library(bbb ${SOURCE_FILES})
 target_include_directories(bbb PRIVATE src)
 
 install(TARGETS bbb DESTINATION lib)
+install(FILES ${LD_SCRIPTS} DESTINATION lib)
 install(FILES ${HEADER_FILES} DESTINATION include/bbb)
+
 
 set(CPACK_GENERATOR "TGZ")
 set(CPACK_SOURCE_GENERATOR "TGZ")
@@ -76,8 +82,8 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
 set(CPACK_PACKAGE_VERSION_MINOR "3")
-set(CPACK_PACKAGE_VERSION_PATCH "3")
+set(CPACK_PACKAGE_VERSION_PATCH "4")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/.vscode/;/*.sh")
+set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/.vscode/;/*.sh;/doc")
 set(CPACK_SYSTEM_NAME "arm-none-eabi")
 include(CPack)
