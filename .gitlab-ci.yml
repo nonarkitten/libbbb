@@ -23,6 +23,7 @@ build:
     paths:
       - build/libbbb-*-arm-none-eabi.tar.gz
       - build/libbbb-*-Source.tar.gz
+    expire_in: never
 
 update_docker_image:
   stage: deploy
