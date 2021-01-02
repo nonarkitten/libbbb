@@ -34,6 +34,7 @@ set(HEADER_FILES
         src/bbb/am335x_mux.h
         src/bbb/am335x_spi.h
         src/bbb/am335x_uart.h
+        src/bbb/am335x_epwm.h
         src/bbb/font_8x8.h
         src/bbb/oled.h
         src/bbb/string2.h
@@ -52,6 +53,7 @@ set(SOURCE_FILES
         src/bbb/am335x_mux.c
         src/bbb/am335x_spi.c
         src/bbb/am335x_uart.c
+        src/bbb/am335x_epwm.c
         src/bbb/bbb_syscall.c
         src/bbb/crt0.S
         src/bbb/oled.c
@@ -81,7 +83,7 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
 set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "3")
+set(CPACK_PACKAGE_VERSION_MINOR "4")
 set(CPACK_PACKAGE_VERSION_PATCH "4")
 set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/.vscode/;/*.sh;/doc")

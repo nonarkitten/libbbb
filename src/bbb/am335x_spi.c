@@ -145,6 +145,8 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
                          | (0 << 1)   // use SPIEN as chip select
                          | (1 << 0);  // multi channel mode
 
+        // set fifo level to 0
+        spi->xferlevel = 0;
         is_initialized = true;
     }
 
@@ -235,28 +237,24 @@ int am335x_spi_write_b(enum am335x_spi_controllers ctrl,
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
-    spi->irqstatus = -1;  // clear all pending status flags
-    spi->xferlevel =
-        (buffer_len << 16);  // configure number of word to be transferred
-    chan->chconf |= (2 << 12) | (1 << 27) |
-                    (1 << 20);  // txonly, txfifo enabled, force spien
-    chan->chctrl |= CHCTRL_EN;  // enable channel
+    spi->irqstatus = -1;                    // clear all pending status flags
+    chan->chconf |= (2 << 12) | (1 << 20);  // txonly, force spien
+    chan->chctrl |= CHCTRL_EN;              // enable channel
 
     while (buffer_len > 0) {
-        while ((chan->chstat & CHSTAT_TXFFF) != 0)
+        while ((chan->chstat & CHSTAT_TXS) == 0)
             ;
         uint32_t t = *buffer++;
         chan->tx   = t;
         buffer_len--;
     }
-
-    while ((spi->irqstatus & (1 << 17)) == 0)
-        ;  // wait until transfer complete
+    // wait until transfer complete
+    while ((chan->chstat & CHSTAT_TXS) == 0)
+        ;
     while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                        // wait until transfer complete
-    chan->chctrl &= ~CHCTRL_EN;  // disable channel
+        ;
+    chan->chctrl &= ~CHCTRL_EN;                            // disable channel
     chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
-    spi->xferlevel = 0;
 
     return 0;
 }
@@ -269,27 +267,24 @@ int am335x_spi_write_w(enum am335x_spi_controllers ctrl,
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
-    spi->irqstatus = -1;  // clear all pending status flags
-    spi->xferlevel =
-        (buffer_len << 16);  // configure number of word to be transferred
-    chan->chconf |= (2 << 12) | (1 << 27) |
-                    (1 << 20);  // txonly, txfifo enabled, force spien
-    chan->chctrl |= CHCTRL_EN;  // enable channel
+    spi->irqstatus = -1;                    // clear all pending status flags
+    chan->chconf |= (2 << 12) | (1 << 20);  // txonly, force spien
+    chan->chctrl |= CHCTRL_EN;              // enable channel
 
     while (buffer_len > 0) {
-        while ((chan->chstat & CHSTAT_TXFFF) != 0)
+        while ((chan->chstat & CHSTAT_TXS) == 0)
             ;
         chan->tx = *buffer++;
         buffer_len--;
     }
 
-    while ((spi->irqstatus & (1 << 17)) == 0)
-        ;  // wait until transfer complete
+    // wait until transfer complete
+    while ((chan->chstat & CHSTAT_TXS) == 0)
+        ;
     while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                        // wait until transfer complete
+        ;
     chan->chctrl &= ~CHCTRL_EN;  // disable channel
     chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
-    spi->xferlevel = 0;
 
     return 0;
 }
