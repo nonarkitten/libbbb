@@ -121,7 +121,7 @@ static const enum am335x_mux_gpio_modules gpio2mux[] = {
 struct gpio_isr_handlers {
     am335x_gpio_handler_t routine; /* application specific interrupt routine */
     void* param;                   /* application specific parameter */
-    enum am335x_gpio_pin_direction mode; /* pin operation mode */
+    enum am335x_gpio_interrupt_modes mode; /* pin operation mode */
 };
 static struct gpio_isr_handlers handlers[AM335X_GPIO_NB_MODULES][32];
 
