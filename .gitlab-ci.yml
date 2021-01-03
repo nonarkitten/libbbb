@@ -3,6 +3,7 @@ image: registry.forge.hefr.ch/embsys/arm-none-eabi-builder:latest
 stages:
   - check
   - build
+  - upload
   - deploy
 
 check:
@@ -24,6 +25,14 @@ build:
       - build/libbbb-*-arm-none-eabi.tar.gz
       - build/libbbb-*-Source.tar.gz
     expire_in: never
+
+upload:
+  stage: upload
+  script:
+    - artifact=$(echo build/libbbb-*-arm-none-eabi.tar.gz)
+    - artifact_base=$(basename $artifact)
+    - artifact_version=$(echo $b | sed 's/^[^-]*-\([^-]*\)-.*/\1/'
+    - curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${artifact} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/libbbb/${artifact_version}/${artifact_base}"
 
 update_docker_image:
   stage: deploy
