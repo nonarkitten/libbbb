@@ -16,11 +16,11 @@
 # CMake file for libbbb
 #
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16)
 
 set(CMAKE_TOOLCHAIN_FILE arm-none-eabi.cmake)
 
-project(libbbb)
+project(libbbb VERSION 1.4.4)
 
 set(CMAKE_C_STANDARD 11)
 enable_language(ASM)
@@ -82,10 +82,7 @@ set(CPACK_GENERATOR "TGZ")
 set(CPACK_SOURCE_GENERATOR "TGZ")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "System library for beaglebone black")
 set(CPACK_PACKAGE_VENDOR "Haute école d'ingénierie et d'architecture de Fribourg")
-set(CPACK_PACKAGE_VERSION_MAJOR "1")
-set(CPACK_PACKAGE_VERSION_MINOR "4")
-set(CPACK_PACKAGE_VERSION_PATCH "4")
-set (CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set (CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/.vscode/;/*.sh;/doc")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_SOURCE_IGNORE_FILES "/upstream/;/build/;/.git*;/.idea/;/.vscode/;/*.sh;/doc")
 set(CPACK_SYSTEM_NAME "arm-none-eabi")
 include(CPack)

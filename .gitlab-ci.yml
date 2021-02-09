@@ -27,6 +27,8 @@ build:
 
 upload:
   stage: upload
+  only:
+    - tags
   script:
     - artifact=$(echo build/libbbb-*-arm-none-eabi.tar.gz)
     - artifact_base=$(basename $artifact)
