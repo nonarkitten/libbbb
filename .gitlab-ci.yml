@@ -4,7 +4,6 @@ stages:
   - check
   - build
   - upload
-  - deploy
 
 check:
   stage: check
