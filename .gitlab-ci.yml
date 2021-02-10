@@ -3,6 +3,7 @@ image: registry.forge.hefr.ch/embsys/arm-none-eabi-builder:latest
 stages:
   - check
   - build
+  - page
   - upload
 
 check:
@@ -27,6 +28,7 @@ build:
 
 page:
   image: node
+  stage: page
   only:
     - tags
     - master
