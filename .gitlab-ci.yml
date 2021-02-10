@@ -25,6 +25,23 @@ build:
       - build/libbbb-*-Source.tar.gz
     expire_in: never
 
+page:
+  image: node
+  only:
+    - tags
+    - master
+  dependencies:
+    - build
+  script:
+    - mkdir web/assets/
+    - cp build/* web/assets/
+    - npm install -g @11ty/eleventy
+    - cd web
+    - eleventy
+  artifacts:
+    paths:
+      - web/_site
+
 upload:
   stage: upload
   only:
