@@ -3,7 +3,7 @@ image: registry.forge.hefr.ch/embsys/arm-none-eabi-builder:latest
 stages:
   - check
   - build
-  - page
+  - pages
   - upload
 
 check:
@@ -26,9 +26,9 @@ build:
       - build/libbbb-*-Source.tar.gz
     expire_in: never
 
-page:
+pages:
   image: node
-  stage: page
+  stage: pages
   only:
     - tags
     - master
