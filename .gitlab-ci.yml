@@ -26,30 +26,12 @@ build:
       - build/libbbb-*-Source.tar.gz
     expire_in: never
 
-pages:
-  image: node
-  stage: pages
-  only:
-    - tags
-    - master
-  dependencies:
-    - build
-  script:
-    - mkdir web/assets/
-    - cp build/* web/assets/
-    - npm install -g @11ty/eleventy
-    - cd web
-    - eleventy --output=../public
-  artifacts:
-    paths:
-      - public
-
-upload:
-  stage: upload
-  only:
-    - tags
-  script:
-    - artifact=$(echo build/libbbb-*-arm-none-eabi.tar.gz)
-    - artifact_base=$(basename $artifact)
-    - artifact_version=$(echo $artifact_base | sed 's/^[^-]*-\([^-]*\)-.*/\1/')
-    - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${artifact} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/libbbb/${artifact_version}/${artifact_base}"'
+# upload:
+#   stage: upload
+#   only:
+#     - tags
+#   script:
+#     - artifact=$(echo build/libbbb-*-arm-none-eabi.tar.gz)
+#     - artifact_base=$(basename $artifact)
+#     - artifact_version=$(echo $artifact_base | sed 's/^[^-]*-\([^-]*\)-.*/\1/')
+#     - 'curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file ${artifact} "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/libbbb/${artifact_version}/${artifact_base}"'
