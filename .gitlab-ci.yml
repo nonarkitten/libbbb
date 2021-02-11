@@ -39,10 +39,10 @@ pages:
     - cp build/* web/assets/
     - npm install -g @11ty/eleventy
     - cd web
-    - eleventy --output=public
+    - eleventy --output=../public
   artifacts:
     paths:
-      - web/public
+      - public
 
 upload:
   stage: upload
