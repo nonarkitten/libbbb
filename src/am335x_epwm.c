@@ -24,8 +24,8 @@
  * Date:    23.11.2019
  */
 
-#include <bbb/am335x_clock.h>
-#include <bbb/am335x_mux.h>
+#include "am335x_clock.h"
+#include "am335x_mux.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>

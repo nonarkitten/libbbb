@@ -28,12 +28,12 @@
  * Date:    23.11.2019
  */
 
-#include "bbb/am335x_gpio.h"
+#include "am335x_gpio.h"
 #include <stdbool.h>
 #include <stdio.h>
-#include "bbb/am335x_spi.h"
-#include <bbb/am335x_dmtimer1.h>
-#include <bbb/oled.h>
+#include "am335x_spi.h"
+#include "am335x_dmtimer1.h"
+#include <oled.h>
 
 static enum oled_devices {
     SSD1351,

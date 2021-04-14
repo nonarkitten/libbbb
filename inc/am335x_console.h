@@ -27,7 +27,7 @@
  * Date:    03.07.2015
  */
 
-#include <bbb/am335x_uart.h>
+#include "am335x_uart.h"
 
 /**
  * initialization method, this method shall be called prior any other ones

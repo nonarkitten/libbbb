@@ -23,11 +23,11 @@
  * Author:  Daniel Gachet
  * Date:    05.05.2019
  */
-#include "bbb/dirent.h"
+#include "dirent.h"
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include "bbb/path.h"
+#include "path.h"
 
 extern dir_t* _opendir(const char* name);
 extern struct dirent* _readdir(dir_t* dirp);

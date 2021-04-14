@@ -27,9 +27,9 @@
  * Date:    17.03.2019
  */
 
-#include "bbb/am335x_spi.h"
-#include "bbb/am335x_clock.h"
-#include "bbb/am335x_mux.h"
+#include "am335x_spi.h"
+#include "am335x_clock.h"
+#include "am335x_mux.h"
 
 // define am335x spi channel registers
 struct am335x_spi_channel {

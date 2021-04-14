@@ -24,7 +24,7 @@
  * Date:    20.02.2019
  */
 
-#include "bbb/vfs.h"
+#include "vfs.h"
 
 static struct vfs_dir vfs_get_dir_internal(const char* name)
 {

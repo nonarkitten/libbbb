@@ -22,13 +22,13 @@
  * Author:  Daniel Gachet
  * Date:    08.05.2019
  */
-#include "bbb/console.h"
+#include "console.h"
 #include <fcntl.h>
 #include <stdarg.h>
 #include <string.h>
 #include <unistd.h>
-#include "bbb/am335x_console.h"
-#include "bbb/vfs.h"
+#include "am335x_console.h"
+#include "vfs.h"
 
 static int cons_open(struct vfs_file* f, int flags, int mode)
 {

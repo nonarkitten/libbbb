@@ -23,7 +23,7 @@
  * Date:    23.03.2019
  */
 
-#include "bbb/am335x_clock.h"
+#include "am335x_clock.h"
 #include <stdbool.h>
 #include <stdint.h>
 

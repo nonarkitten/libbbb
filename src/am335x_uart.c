@@ -28,9 +28,9 @@
  * Date:    03.07.2015
  */
 
-#include "bbb/am335x_uart.h"
-#include "bbb/am335x_clock.h"
-#include "bbb/am335x_mux.h"
+#include "am335x_uart.h"
+#include "am335x_clock.h"
+#include "am335x_mux.h"
 
 // define am335x uart controller registers
 // be careful, most of those registers have multiple usages according to

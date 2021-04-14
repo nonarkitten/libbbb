@@ -27,7 +27,7 @@
  * Date:    03.08.2016
  */
 
-#include "bbb/am335x_mux.h"
+#include "am335x_mux.h"
 #include <stdio.h>
 #include <stdlib.h>
 
