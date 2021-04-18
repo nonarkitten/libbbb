@@ -176,7 +176,7 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
                    | (0 << 21)   // spienslv = 0
                    | (0 << 20)   // force = 0
                    | (0 << 19)   // turbo = 0
-                   | (1 << 16)   // TX on D1, RX on D0
+                   | (6 << 16)   // TX on D0, RX on D1
                    | (0 << 14)   // DMA transfer disabled
                    | (0 << 12)   // TX + RX mode
                    | ((word_len - 1) << 7)  // spi word len
@@ -194,97 +194,34 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_spi_read_b(enum am335x_spi_controllers ctrl,
+int am335x_spi_xfer(enum am335x_spi_controllers ctrl,
                       enum am335x_spi_channels channel,
-                      uint8_t cmd_word,
-                      uint8_t nop_word,
                       uint8_t* buffer,
                       size_t buffer_len)
 {
     volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
-    chan->chconf |= (0 << 12) | (1 << 20);
-    chan->chctrl |= CHCTRL_EN;  // enable channel
+    // enable channel
+    chan->chctrl |= CHCTRL_EN;
+    chan->chconf |= (1 << 20);
 
-    while (buffer_len > 0) {
-        while ((chan->chstat & CHSTAT_TXS) == 0)
-            ;
-        chan->tx = cmd_word;
-        while ((chan->chstat & CHSTAT_RXS) == 0)
-            ;
+    while (buffer_len--) {
+        while ((chan->chstat & CHSTAT_TXS) == 0) continue;
+        chan->tx = *buffer;
+        while ((chan->chstat & CHSTAT_RXS) == 0) continue;
         *buffer++ = chan->rx & 0xff;
-        buffer_len--;
-        cmd_word = nop_word;
-    }
-
-    while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;                        // wait until transfer complete
-    chan->chctrl &= ~CHCTRL_EN;  // disable channel
-    chan->chconf &=
-        ~((3 << 12) | (1 << 27) | (1 << 28) | (1 << 20));  // restore chconf
-
-    return 0;
-}
-
-/* -------------------------------------------------------------------------- */
-
-int am335x_spi_write_b(enum am335x_spi_controllers ctrl,
-                       enum am335x_spi_channels channel,
-                       const uint8_t* buffer,
-                       size_t buffer_len)
-{
-    volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
-    volatile struct am335x_spi_channel* chan = &spi->channel[channel];
-
-    spi->irqstatus = -1;                    // clear all pending status flags
-    chan->chconf |= (2 << 12) | (1 << 20);  // txonly, force spien
-    chan->chctrl |= CHCTRL_EN;              // enable channel
-
-    while (buffer_len > 0) {
-        while ((chan->chstat & CHSTAT_TXS) == 0)
-            ;
-        uint32_t t = *buffer++;
-        chan->tx   = t;
-        buffer_len--;
-    }
-    // wait until transfer complete
-    while ((chan->chstat & CHSTAT_TXS) == 0)
-        ;
-    while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;
-    chan->chctrl &= ~CHCTRL_EN;                            // disable channel
-    chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
-
-    return 0;
-}
-
-int am335x_spi_write_w(enum am335x_spi_controllers ctrl,
-                       enum am335x_spi_channels channel,
-                       const uint32_t* buffer,
-                       uint32_t buffer_len)
-{
-    volatile struct am335x_spi_ctrl* spi     = spi_ctrl[ctrl];
-    volatile struct am335x_spi_channel* chan = &spi->channel[channel];
-
-    spi->irqstatus = -1;                    // clear all pending status flags
-    chan->chconf |= (2 << 12) | (1 << 20);  // txonly, force spien
-    chan->chctrl |= CHCTRL_EN;              // enable channel
-
-    while (buffer_len > 0) {
-        while ((chan->chstat & CHSTAT_TXS) == 0)
-            ;
-        chan->tx = *buffer++;
-        buffer_len--;
     }
 
     // wait until transfer complete
-    while ((chan->chstat & CHSTAT_TXS) == 0)
-        ;
-    while ((chan->chstat & CHSTAT_EOT) == 0)
-        ;
-    chan->chctrl &= ~CHCTRL_EN;  // disable channel
-    chan->chconf &= ~((3 << 12) | (1 << 27) | (1 << 20));  // restore chconf
+    //while ((chan->chstat & CHSTAT_EOT) == 0) continue;
+
+    // restore chconf
+    chan->chconf &= ~(1 << 20);
+    // disable channel
+    chan->chctrl &= ~CHCTRL_EN;
 
     return 0;
 }
+
+

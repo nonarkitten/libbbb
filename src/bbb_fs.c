@@ -123,6 +123,27 @@ int _stat(const char* file, struct stat* st)
 }
 
 // --- directory services ------------------------------------------------------
+static struct vfs_dir dir_bank[8] = { 0 };
+static uint8_t dir_bank_alloc_map = 0;
+
+struct vfs_dir* calloc_dir() {
+    for(int i=0; i<8; i++) {
+        uint8_t bit = (1 << i);
+        if((dir_bank_alloc_map & bit) == 0) {
+            dir_bank_alloc_map |= bit;
+            return &dir_bank[i];
+        }
+    }
+    return (struct vfs_dir*)0;
+}
+
+static void free_dir(struct vfs_dir* dir) {
+    int i = dir - dir_bank;
+    if(i >= 0 && i < 8) {
+        uint8_t bit = (1 << i);
+        dir_bank_alloc_map &= ~bit;
+    }
+}
 
 dir_t* _opendir(const char* name)
 {
@@ -136,7 +157,7 @@ dir_t* _opendir(const char* name)
     dir.dirp = dir.dops->opendir(&dir, dir.name);
     if (dir.dirp == 0) return 0;
 
-    struct vfs_dir* d = calloc(1, sizeof(*d));
+    struct vfs_dir* d = calloc_dir();
     if (d == 0) return 0;
 
     *d = dir;
@@ -154,7 +175,7 @@ int _closedir(dir_t* dirp)
 {
     struct vfs_dir* dir = (struct vfs_dir*)dirp;
     dir->dops->closedir(dir, dir->dirp);
-    free(dir);
+    free_dir(dir);
     return 0;
 }
 

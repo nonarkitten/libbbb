@@ -104,6 +104,12 @@ uint32_t am335x_dmtimer1_get_counter() { return timer1->tcrr; }
 
 // ----------------------------------------------------------------------------
 
+double am335x_dmtimer1_get_time() {
+    return ((double)timer1->tcrr) / ((double)FREQUENCY);
+}
+
+// ----------------------------------------------------------------------------
+
 uint32_t am335x_dmtimer1_get_frequency() { return FREQUENCY; }
 
 // ----------------------------------------------------------------------------

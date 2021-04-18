@@ -47,29 +47,12 @@
 
 // --- miscellaneous services -------------------------------------------------
 
-void* _sbrk(int incr)
-{
-    extern char _end; /* Defined by the linker */
-    extern char _stack_bottom;
-    static char* heap_end;
-    char* prev_heap_end;
-
-    if (heap_end == 0) {
-        heap_end = &_end;
-    }
-    prev_heap_end = heap_end;
-    if (heap_end + incr > &_stack_bottom) {
-        return 0;
-    } else {
-        heap_end += incr;
-    }
-    return (void*)prev_heap_end;
+void* _sbrk(int incr) {
+    return (void*)0;
 }
 
-void _exit(int i __attribute__((unused)))
-{
-    while (1)
-        ;
+void _exit(int i __attribute__((unused))) {
+    while (1) ;
 }
 
 extern void (*__preinit_array_start[])(void) __attribute__((weak));

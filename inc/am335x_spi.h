@@ -42,7 +42,7 @@ enum am335x_spi_controllers {
  * defines the available channels to be activated during data transfer
  */
 enum am335x_spi_channels {
-    AM335X_CHAN0,
+	AM335X_CHAN0,
     AM335X_CHAN1,
 };
 
@@ -55,51 +55,27 @@ enum am335x_spi_channels {
  *@bus_speed i2c bus speed in Hz
  *@param word_len size of data word in bits
  */
-extern void am335x_spi_init(enum am335x_spi_controllers ctrl,
-                            enum am335x_spi_channels channel,
-                            uint32_t bus_speed,
-                            uint32_t word_len);
+extern void am335x_spi_init(
+		enum am335x_spi_controllers ctrl,
+		enum am335x_spi_channels channel,
+		uint32_t bus_speed,
+		uint32_t word_len);
 
 /**
- * method to read data bytes from the internal register files of
- * the specified chip.
+ * method to transfer data bytes to and from the specified chip.
  *
  *@param ctrl am335x spi controller name
  *@param channel channel to be activated during transfer
- *@param cmd_word command word, i.e. register address of the chip internal
- *                register into which the data byte should be read
- *@param buffer data buffer containing the read data bytes
- *@param buffer_len number of data bytes to read
+ *@param buffer data buffer containing the data to send
+ *       and to receive into
+ *@param buffer_len number of data bytes to read & write
  *
  *@return int status, 0=success, -1=error
  */
-extern int am335x_spi_read_b(enum am335x_spi_controllers ctrl,
-                             enum am335x_spi_channels channel,
-                             uint8_t cmd_word,
-                             uint8_t nop_word,
-                             uint8_t* buffer,
-                             size_t buffer_len);
+extern int am335x_spi_xfer(
+		enum am335x_spi_controllers ctrl,
+        enum am335x_spi_channels channel,
+        uint8_t* buffer,
+        size_t buffer_len);
 
-/**
- * method to write data byte into the internal register files of
- * the specified chip.
- *
- *@param ctrl am335x spi controller name
- *@param channel channel to be activated during transfer
- *@param cmd_word command word, i.e. register address of the chip internal
- *                register into which the data byte should be written
- *@param buffer data buffer containing the data bytes to write
- *@param buffer_len number of data byte to write
- *
- *@return int status, 0=success, -1=error
- */
-extern int am335x_spi_write_w(enum am335x_spi_controllers ctrl,
-                              enum am335x_spi_channels channel,
-                              const uint32_t* buffer,
-                              uint32_t buffer_len);
-
-extern int am335x_spi_write_b(enum am335x_spi_controllers ctrl,
-                              enum am335x_spi_channels channel,
-                              const uint8_t* buffer,
-                              size_t buffer_len);
 #endif

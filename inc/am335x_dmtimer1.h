@@ -42,6 +42,13 @@ extern void am335x_dmtimer1_init();
 extern uint32_t am335x_dmtimer1_get_counter();
 
 /**
+ * method to get the current AM335x DMTimer1 counter value in seconds
+ *
+ * @return counter value in seconds (double)
+ */
+extern double am335x_dmtimer1_get_time();
+
+/**
  * method to get the frequency of the timer source clock
  * @return timer clock frequency in Hz
  */
