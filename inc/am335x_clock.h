@@ -99,6 +99,11 @@ enum am335x_clock_epwm_modules {
 };
 
 /**
+ * method to ramalamadingdong the GPMC
+ */
+void am335x_clock_enable_gpmc(void);
+
+/**
  * method to enable the system L3 and system L4_WKUP clocks.
  */
 extern void am335x_clock_enable_l3_l4wkup(void);
