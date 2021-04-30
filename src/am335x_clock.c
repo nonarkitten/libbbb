@@ -366,11 +366,10 @@ void am335x_clock_enable_l3_l4wkup(void)
 /* -------------------------------------------------------------------------- */
 
 void am335x_clock_enable_gpmc(void) {
-
-	wkup->div_m4_dpll_core |= 0x100;
-	while((wkup->div_m4_dpll_core & 0x200) == 0)
-		;
-
+//
+//	wkup->div_m4_dpll_core |= 0x100;
+//	while((wkup->div_m4_dpll_core & 0x200) == 0)
+//		;
 	enable_module(&per->gpmc_clkctrl);
 	enable_module(&per->elm_clkctrl);
 }
