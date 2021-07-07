@@ -16,7 +16,7 @@
  * This module is based on the software library developped by Texas Instruments
  * Incorporated - http://www.ti.com/ for its AM335x starter kit.
  *
- * Project: HEIA-FRÂ / Embedded Systems 1+2 Laboratory
+ * Project: HEIA-FR / Embedded Systems 1+2 Laboratory
  *
  * Abstract: AM335x Clocking Driver
  *
@@ -69,7 +69,7 @@ static volatile struct am335x_cm_per_ctrl {
     uint32_t res3[1];              // 8c-8c
     uint32_t rng_clkctrl;          // 90
     uint32_t aes0_clkctrl;         // 94
-    uint32_t res4[2];              //Â 98-9c
+    uint32_t res4[2];              // 98-9c
     uint32_t sha0_clkctrl;         // a0
     uint32_t pka_clkctrl;          // a4
     uint32_t gpio6_clkctrl;        // a8
@@ -120,11 +120,11 @@ static volatile struct am335x_cm_per_ctrl {
 #define L3_CLKSTCTRL_CLKACTIVITY_MMC_FCLK (1 << 3)
 #define L3_CLKSTCTRL_CLKACTIVITY_EMIF_GCLK (1 << 2)
 
-// CMÂ PER OCPWP_L3_CLKSTCTRL register bit definition
+// CM PER OCPWP_L3_CLKSTCTRL register bit definition
 #define OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L4_GCLK (1 << 5)
 #define OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK (1 << 4)
 
-// CMÂ PERÂ OCPWP_L3_CLKSTCTRL register bit definition
+// CM PER OCPWP_L3_CLKSTCTRL register bit definition
 #define L3S_CLKSTCTRL_CLKACTIVITY_L3S_GCLK (1 << 3)
 
 static volatile struct am335x_cm_wkup_ctrl {
@@ -240,13 +240,13 @@ static volatile struct am335x_cm_wkup_ctrl {
 // CM DPLL Registers // see SPRUH73L chap. 8.1.2.3 / p. 1283
 static volatile struct am335x_cm_dpll_ctrl {
     uint32_t res0[1];                  // 00
-    uint32_t clksel_timer7_clk;        //Â 04
-    uint32_t clksel_timer2_clk;        //Â 08
-    uint32_t clksel_timer3_clk;        //Â 0c
-    uint32_t clksel_timer4_clk;        //Â 10
+    uint32_t clksel_timer7_clk;        // 04
+    uint32_t clksel_timer2_clk;        // 08
+    uint32_t clksel_timer3_clk;        // 0c
+    uint32_t clksel_timer4_clk;        // 10
     uint32_t cm_mac_clksel;            // 14
-    uint32_t clksel_timer5_clk;        //Â 18
-    uint32_t clksel_timer6_clk;        //Â 1c
+    uint32_t clksel_timer5_clk;        // 18
+    uint32_t clksel_timer6_clk;        // 1c
     uint32_t cm_cpts_rft_clksel;       // 20
     uint32_t res1[1];                  // 24
     uint32_t clksel_timer1ms_clk;      // 28
@@ -345,7 +345,7 @@ void am335x_clock_enable_l3_l4wkup(void)
 
     // wait until modules are active
     wait4bit(&per->l3_clkstctrl, L3_CLKSTCTRL_CLKACTIVITY_L3_GCLK);
-    ///Â GAC wait4bit (&per->ocpwp_l3_clkstctrl,
+    /// GAC wait4bit (&per->ocpwp_l3_clkstctrl,
     ///OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK);
     wait4bit(&per->l3s_clkstctrl, L3S_CLKSTCTRL_CLKACTIVITY_L3S_GCLK);
 
@@ -365,14 +365,29 @@ void am335x_clock_enable_l3_l4wkup(void)
 
 /* -------------------------------------------------------------------------- */
 
-void am335x_clock_enable_gpmc(void) {
+void am335x_clock_enable_gpmc(uint32_t clk_div) {
 //
 //	wkup->div_m4_dpll_core |= 0x100;
 //	while((wkup->div_m4_dpll_core & 0x200) == 0)
 //		;
+
+	wkup->div_m4_dpll_core = (wkup->div_m4_dpll_core & ~0x1F)
+			| (0x1F & clk_div);
+
 	enable_module(&per->gpmc_clkctrl);
 	enable_module(&per->elm_clkctrl);
 }
+
+//void am335x_clock_reset_pru(void) {
+//	per->l4ls_clkctrl |=  0x2;
+//	per->l4ls_clkctrl &= ~0x2;
+//}
+//
+//void am335x_clock_enable_pru(void) {
+//	am335x_clock_reset_pru();
+//	wkup_module(&per->icss_clkctrl);
+//	am335x_clock_reset_pru();
+//}
 
 void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module)
 {

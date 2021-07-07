@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
+// TODO make big endian when used
+
 #include "am335x_epwm.h"
 
 // define am335x epwm controller registers

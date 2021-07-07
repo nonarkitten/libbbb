@@ -31,6 +31,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// TODO make big endian when used
+
 /**
  * defines the available uart controllers of the am335x
  */

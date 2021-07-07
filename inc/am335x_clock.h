@@ -1,6 +1,9 @@
 #pragma once
 #ifndef AM335X_CLOCK_H
 #define AM335X_CLOCK_H
+
+#include <stdint.h>
+
 /**
  * Copyright 2015 University of Applied Sciences Western Switzerland / Fribourg
  *
@@ -99,10 +102,15 @@ enum am335x_clock_epwm_modules {
 };
 
 /**
+ * method to ramalamadingdong the PRUs
+ */
+//void am335x_clock_reset_pru(void);
+//void am335x_clock_enable_pru(void);
+
+/**
  * method to ramalamadingdong the GPMC
  */
-void am335x_clock_enable_gpmc(void);
-
+void am335x_clock_enable_gpmc(uint32_t clk_div);
 /**
  * method to enable the system L3 and system L4_WKUP clocks.
  */

@@ -31,16 +31,19 @@ typedef enum {
 
 /* Structure to save gpmc cs context */
 typedef struct {
-	uint32_t config1;
-	uint32_t config2;
-	uint32_t config3;
-	uint32_t config4;
-	uint32_t config5;
-	uint32_t config6;
-	uint32_t config7;
-	uint32_t nand_cmd;
-	uint32_t nand_address;
-	uint32_t nand_data;
+	uint32_t config1; // 90
+	uint32_t config2; // 94
+	uint32_t config3; // 98
+	uint32_t config4; // 9c
+	uint32_t config5; // a0
+	uint32_t config6; // a4
+	uint32_t config7; // a8
+	uint32_t nand_cmd;// ac
+	uint32_t nand_address; // b0
+	uint32_t nand_data; // b4
+	uint32_t __reserved_08;// b8..
+	uint32_t __reserved_0C;// bc..
+	// c0
 } am335x_gpmc_cs_config_t;
 
 /*
@@ -89,6 +92,6 @@ extern void am335x_gpmc_enable_cs_config(
 		uint32_t size						// size of this range
 		);
 
-extern void am335x_gpmc_init(void);
+extern void am335x_gpmc_init(uint32_t clk_div);
 
 #endif /* LIBBBB_INC_AM335X_GPMC_H_ */

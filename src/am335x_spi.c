@@ -126,24 +126,26 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
         am335x_clock_enable_spi_module(spi2clock[ctrl]);
 
         // reset and disable spi controller
-        spi->sysconfig = SYSCONFIG_SRST;
-        while ((spi->sysstatus & SYSSTATUS_RDONE) == 0)
+        spi->sysconfig = (SYSCONFIG_SRST);
+        while ((spi->sysstatus & (SYSSTATUS_RDONE)) == 0)
             ;
 
         // configure clock activity and idle mode
         spi->sysconfig =
-            SYSCONFIG_SIDLEMODE_NOIDLE | SYSCONFIG_CLKACTIVITY_BOTH;
+        		(SYSCONFIG_SIDLEMODE_NOIDLE | SYSCONFIG_CLKACTIVITY_BOTH);
 
         //Â configure module contoller
         // module is configured after the channel to avoid glitch on chip select
         // signal
-        spi->modulctrl = (0 << 8)     //Â fifo managed with ctrl register
-                         | (0 << 7)   // multiword disabled
-                         | (1 << 4)   //Â initial spi delay = 4 spi clock
-                         | (0 << 3)   // functional mode
-                         | (0 << 2)   //Â master mode
-                         | (0 << 1)   // use SPIEN as chip select
-                         | (1 << 0);  // multi channel mode
+        spi->modulctrl = (
+        	   (0 << 8)  // fifo managed with ctrl register
+			 | (0 << 7)  // multiword disabled
+			 | (1 << 4)  // initial spi delay = 4 spi clock
+			 | (0 << 3)  // functional mode
+			 | (0 << 2)  // master mode
+			 | (0 << 1)  // use SPIEN as chip select
+			 | (1 << 0)  // multi channel mode
+			 );
 
         // set fifo level to 0
         spi->xferlevel = 0;
@@ -171,19 +173,21 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
     }
 
     // configure channel (tx & rx fifo disabled)
-    chan->chconf = (clkg << 29)  // clock granularity
-                   | (3 << 25)   // chip select time control 2.5 cycles
-                   | (0 << 21)   // spienslv = 0
-                   | (0 << 20)   // force = 0
-                   | (0 << 19)   // turbo = 0
-                   | (6 << 16)   // TX on D0, RX on D1
-                   | (0 << 14)   // DMA transfer disabled
-                   | (0 << 12)   //Â TX + RX mode
-                   | ((word_len - 1) << 7)  // spi word len
-                   | (1 << 6)               // spien polarity = low
-                   | (clkd << 2)            // frequency diviver
-                   | (0 << 1)               // spiclk polarity = high
-                   | (0 << 0);              // spiclk phase = odd
+    chan->chconf = (
+    		 (clkg << 29)  // clock granularity
+		   | (3 << 25)   // chip select time control 2.5 cycles
+		   | (0 << 21)   // spienslv = 0
+		   | (0 << 20)   // force = 0
+		   | (0 << 19)   // turbo = 0
+		   | (6 << 16)   // TX on D0, RX on D1
+		   | (0 << 14)   // DMA transfer disabled
+		   | (0 << 12)   // TX + RX mode
+		   | ((word_len - 1) << 7)  // spi word len
+		   | (1 << 6)               // spien polarity = low
+		   | (clkd << 2)            // frequency diviver
+		   | (0 << 1)               // spiclk polarity = high
+		   | (0 << 0)               // spiclk phase = odd
+		   );
 
     // configure clock ration extender
     chan->chctrl = (extclk << 8);
@@ -203,14 +207,14 @@ int am335x_spi_xfer(enum am335x_spi_controllers ctrl,
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
     // enable channel
-    chan->chctrl |= CHCTRL_EN;
+    chan->chctrl |= (CHCTRL_EN);
     chan->chconf |= (1 << 20);
 
     while (buffer_len--) {
-        while ((chan->chstat & CHSTAT_TXS) == 0) continue;
-        chan->tx = *buffer;
-        while ((chan->chstat & CHSTAT_RXS) == 0) continue;
-        *buffer++ = chan->rx & 0xff;
+        while ((chan->chstat & (CHSTAT_TXS)) == 0) continue;
+        chan->tx = (*buffer);
+        while ((chan->chstat & (CHSTAT_RXS)) == 0) continue;
+        *buffer++ = (chan->rx) & 0xff;
     }
 
     // wait until transfer complete
@@ -219,7 +223,7 @@ int am335x_spi_xfer(enum am335x_spi_controllers ctrl,
     // restore chconf
     chan->chconf &= ~(1 << 20);
     // disable channel
-    chan->chctrl &= ~CHCTRL_EN;
+    chan->chctrl &= ~(CHCTRL_EN);
 
     return 0;
 }

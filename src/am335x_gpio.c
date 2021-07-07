@@ -31,6 +31,8 @@
 #include "am335x_clock.h"
 #include "am335x_mux.h"
 
+// TODO make big endian when used
+
 // define am335x gpio registers
 struct am335x_gpio_ctrl {
     uint32_t revision;        // 00
@@ -145,7 +147,7 @@ void am335x_gpio_interrupt_handler(enum am335x_gpio_modules module)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
     uint32_t isr                           = gpio->irqstatus0;
-    gpio->irqstatus0                       = isr;
+    gpio->irqstatus0                       = (isr);
 
     struct gpio_isr_handlers* handler = handlers[module];
     for (int pin = 0; pin < 32; pin++) {
@@ -168,11 +170,11 @@ void* am335x_gpio_init(enum am335x_gpio_modules module)
         am335x_clock_enable_gpio_module(gpio2clock[module]);
 
         // enable gpio module
-        gpio->ctrl &= ~CTRL_DISABLEMODULE;
+        gpio->ctrl &= (~CTRL_DISABLEMODULE);
 
         // reset gpio module and wait until performed
-        gpio->sysconfig |= SYSCONFIG_SOFTRESET;
-        while ((gpio->sysstatus & SYSSTATUS_RESETDONE) == 0)
+        gpio->sysconfig |= (SYSCONFIG_SOFTRESET);
+        while ((gpio->sysstatus & (SYSSTATUS_RESETDONE)) == 0)
             ;
 
         // mask all interrupt request lines and clear status
@@ -184,7 +186,7 @@ void* am335x_gpio_init(enum am335x_gpio_modules module)
         gpio->leveldetect1   = 0;
         gpio->irqstatus0     = -1;
         gpio->irqstatus1     = -1;
-        gpio->debouncingtime = 30;
+        gpio->debouncingtime = (30);
 
         // mark as initialized
         is_initialized[module] = true;
@@ -306,6 +308,7 @@ void am335x_gpio_change_states(enum am335x_gpio_modules module,
                                bool pin_state)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
+    pin_set = (pin_set);
     if (pin_state) {
         gpio->setdataout = pin_set;
     } else {
@@ -318,7 +321,7 @@ void am335x_gpio_change_states(enum am335x_gpio_modules module,
 uint32_t am335x_gpio_get_states(enum am335x_gpio_modules module)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
-    return gpio->datain;
+    return (gpio->datain);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -354,7 +357,7 @@ void am335x_gpio_detach(enum am335x_gpio_modules module, uint32_t pin_nr)
 {
     if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32)) {
         volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
-        gpio->irqstatus_clr0                   = (1 << pin_nr);
+        gpio->irqstatus_clr0 = (1 << pin_nr);
         gpio->risingdetect &= ~(1 << pin_nr);
         gpio->fallingdetect &= ~(1 << pin_nr);
         gpio->leveldetect0 &= ~(1 << pin_nr);
@@ -370,7 +373,7 @@ void am335x_gpio_enable(enum am335x_gpio_modules module, uint32_t pin_nr)
 {
     if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32)) {
         volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
-        gpio->irqstatus_set0 |= 1 << pin_nr;
+        gpio->irqstatus_set0 |= (1 << pin_nr);
     }
 }
 
@@ -378,14 +381,14 @@ void am335x_gpio_disable(enum am335x_gpio_modules module, uint32_t pin_nr)
 {
     if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32)) {
         volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
-        gpio->irqstatus_clr0 |= 1 << pin_nr;
+        gpio->irqstatus_clr0 |= (1 << pin_nr);
     }
 }
 
 int am335x_gpio_vector(enum am335x_gpio_modules module)
 {
     volatile struct am335x_gpio_ctrl* gpio = gpio_ctrl[module];
-    uint32_t isr                           = gpio->irqstatus0;
+    uint32_t isr = (gpio->irqstatus0);
 
     uint32_t pin = 0;
     while (pin < 32) {

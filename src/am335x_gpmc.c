@@ -12,11 +12,11 @@
 static volatile const am335x_gpmc_regs_t* gpmc = (am335x_gpmc_regs_t*)0x50000000;
 
 static void writel(uint32_t value, uint32_t* address) {
-	*(volatile uint32_t*)address = value;
+	*(volatile uint32_t*)address = (value);
 	asm volatile("" : : : "memory");
 }
 
-static void sdelay(uint32_t loops) {
+void sdelay(uint32_t loops) {
 	__asm__ volatile (
 			"\n1:\n\t"
 			"subs %0, %1, #1\n\t"
@@ -26,7 +26,12 @@ static void sdelay(uint32_t loops) {
 	);
 }
 
-void am335x_gpmc_enable_cs_config(am335x_gpmc_cs_config_t *setting, uint32_t cs, uint32_t base, uint32_t size) {
+void am335x_gpmc_enable_cs_config(
+		am335x_gpmc_cs_config_t *setting,
+		uint32_t cs,
+		uint32_t base,
+		uint32_t size)
+{
 	// Point to the GPMC config
 	am335x_gpmc_cs_config_t* _cs = (am335x_gpmc_cs_config_t*)&gpmc->cs_context[cs];
 
@@ -60,9 +65,9 @@ void am335x_gpmc_enable_cs_config(am335x_gpmc_cs_config_t *setting, uint32_t cs,
 	sdelay(2000);
 }
 
-void am335x_gpmc_init(void)
+void am335x_gpmc_init(uint32_t clk_div)
 {
-	am335x_clock_enable_gpmc();
+	am335x_clock_enable_gpmc(clk_div);
 
 	/* Reset GPMC */
 	writel(2, (uint32_t*)&gpmc->sysconfig);
@@ -71,6 +76,7 @@ void am335x_gpmc_init(void)
 	/* global settings */
 	writel(0, (uint32_t*)&gpmc->irqenable); /* isr's sources masked */
 	writel(0, (uint32_t*)&gpmc->timeout_ctrl);/* timeout disable */
+	writel(1 << 8, (uint32_t*)&gpmc->config); /* wait polarity */
 
 	/*
 	 * Disable the GPMC0 config set by ROM code
