@@ -49,26 +49,26 @@
  */
 struct timer1_ctrl {
     uint32_t tidr;       // 00
-    uint32_t res1[3];    // 04-0c
+    uint32_t res1[3];    // 04-0C
     uint32_t tiocp_cfg;  // 10
     uint32_t tistat;     // 14
     uint32_t tisr;       // 18
-    uint32_t tier;       //Â 1c
+    uint32_t tier;       // 1C
     uint32_t twer;       // 20
     uint32_t tclr;       // 24
     uint32_t tcrr;       // 28
-    uint32_t tldr;       // 2c
+    uint32_t tldr;       // 2C
     uint32_t ttgr;       // 30
-    uint32_t twps;       //Â 34
+    uint32_t twps;       // 34
     uint32_t tmar;       // 38
-    uint32_t tcar1;      //Â 3c
-    uint32_t tsicr;      //Â 40
+    uint32_t tcar1;      // 3C
+    uint32_t tsicr;      // 40
     uint32_t tcar2;      // 44
     uint32_t tpir;       // 48
-    uint32_t tnir;       // 4c
+    uint32_t tnir;       // 4C
     uint32_t tcvr;       // 50
     uint32_t tocr;       // 54
-    uint32_t towr;       // 5c
+    uint32_t towr;       // 5C
 };
 
 /**

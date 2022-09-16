@@ -176,11 +176,13 @@ static const enum am335x_mux_i2c_modules i2c2mux[] = {
 static int wait_for_status(volatile struct am335x_i2c_ctrl* i2c, int bit)
 {
     int status = 0;
+    int timeout = 20000;
     while (1) {
         // check for malfunction...
         status = -1;
         if ((i2c->irqstatus_raw & IRQSTATUS_RAW_AL) != 0) break;
         if ((i2c->irqstatus_raw & IRQSTATUS_RAW_AERR) != 0) break;
+        if (timeout == 0) break; else timeout--;
 
         // check for valid bit...
         status = 0;
@@ -343,7 +345,7 @@ int am335x_i2c_write(enum am335x_i2c_controllers ctrl,
 }
 
 /* -------------------------------------------------------------------------- */
-
+__attribute__((optimize(0)))
 bool am335x_i2c_probe(enum am335x_i2c_controllers ctrl, uint8_t chip_id)
 {
     volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
@@ -366,9 +368,10 @@ bool am335x_i2c_probe(enum am335x_i2c_controllers ctrl, uint8_t chip_id)
     i2c->con = (i2c->con & ~CON_TRX) | CON_MST | CON_STT | CON_STP;
 
     // wait until transfer complete and check chip presence
-    if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
+    //if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
+    wait_for_status(i2c, IRQSTATUS_RAW_BF);
         found = (i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) == 0;
-    }
+    //}
 
     // if device exists, then read dummy data byte and clear rx fifo
     if (found) {

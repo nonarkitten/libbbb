@@ -179,7 +179,7 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
 		   | (0 << 21)   // spienslv = 0
 		   | (0 << 20)   // force = 0
 		   | (0 << 19)   // turbo = 0
-		   | (6 << 16)   // TX on D0, RX on D1
+		   | (1 << 16)   // TX on D1, RX on D0
 		   | (0 << 14)   // DMA transfer disabled
 		   | (0 << 12)   // TX + RX mode
 		   | ((word_len - 1) << 7)  // spi word len
