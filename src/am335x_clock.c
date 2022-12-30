@@ -396,11 +396,12 @@ void am335x_clock_enable_gpmc(uint32_t clk_div) {
 //	per->l4ls_clkctrl &= ~0x2;
 // }
 //
-// void am335x_clock_enable_pru(void) {
-//	am335x_clock_reset_pru();
-//	wkup_module(&per->icss_clkctrl);
-//	am335x_clock_reset_pru();
-// }
+void am335x_clock_enable_pru(volatile uint32_t* pru_reset) {
+    enable_module(&per->l4ls_clkstctrl);
+    *pru_reset = __builtin_bswap32(2);
+	enable_module(&per->icss_clkctrl);
+    *pru_reset = __builtin_bswap32(2);
+}
 
 void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module) {
   switch (module) {
