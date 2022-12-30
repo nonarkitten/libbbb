@@ -44,7 +44,7 @@ static volatile struct am335x_prm_device {
   uint32_t pm_wkup_pwrstctrl;
   uint32_t pm_wkup_pwrstst;
   uint32_t rm_wkup_rsts;
-} *prm_wkup = (volatile struct am335x_prm_device *)0x44E00F00;
+} *prm_device = (volatile struct am335x_prm_device *)0x44E00F00;
 
 static volatile struct am335x_pruss_cfg {
   uint32_t revid;
@@ -76,8 +76,8 @@ static volatile struct am335x_pru_ctrl {
   uint32_t ctbir1;
   uint32_t ctppr0;
   uint32_t ctppr1;
-} *pru0_ctrl = (volatile struct am335x_pru_ctrl)0x4A322000,
-  *pru1_ctrl = (volatile struct am335x_pru_ctrl)0x4A324000;
+} *pru0_ctrl = (volatile struct am335x_pru_ctrl*)0x4A322000,
+  *pru1_ctrl = (volatile struct am335x_pru_ctrl*)0x4A324000;
 
 void am335x_pru_init(void) {
   /* Enable PRU Clocks */
@@ -85,19 +85,15 @@ void am335x_pru_init(void) {
 
   am335x_dmtimer1_wait_us(100);
 
-  pruss_cfg->syscfg = _builtin_bswap32(0x00000005);
-  while (pruss_cfg->syscfg & _builtin_bswap32(0x20))
+  pruss_cfg->syscfg = __builtin_bswap32(0x00000005);
+  while (pruss_cfg->syscfg & __builtin_bswap32(0x20))
     ;
 
   /* Clear out the date memory of both PRU cores */
-  am335x_pru_memset((SOC_PRUICSS1_REGS + SOC_PRUICSS_PRU0_DRAM_OFFSET),
-                    8 * 1024, 0);  // Data 8KB RAM0
-  am335x_pru_memset((SOC_PRUICSS1_REGS + SOC_PRUICSS_PRU1_DRAM_OFFSET),
-                    8 * 1024, 0);  // Data 8KB RAM1
-  am335x_pru_memset((SOC_PRUICSS1_REGS + SOC_PRUICSS_PRU0_IRAM_OFFSET),
-                    8 * 1024, 0);
-  am335x_pru_memset((SOC_PRUICSS1_REGS + SOC_PRUICSS_PRU1_IRAM_OFFSET),
-                    8 * 1024, 0);
+  am335x_pru_memset(PRU0_DRAM, 0, 8 * 1024, 0);  // Data 8KB RAM0
+  am335x_pru_memset(PRU1_DRAM, 0, 8 * 1024, 0);  // Data 8KB RAM1
+  am335x_pru_memset(PRU0_IRAM, 0, 8 * 1024, 0);
+  am335x_pru_memset(PRU1_IRAM, 0, 8 * 1024, 0);
 }
 
 void am335x_pru_halt(PRU_CORE_t PRUCore) {
@@ -106,8 +102,8 @@ void am335x_pru_halt(PRU_CORE_t PRUCore) {
 }
 
 void am335x_pru_enable(PRU_CORE_t PRUCore) {
-  if (PRUCore & PRU0) pru0_ctrl->ctrl = _builtin_bswap32(0xB);
-  if (PRUCore & PRU1) pru1_ctrl->ctrl = _builtin_bswap32(0xB);
+  if (PRUCore & PRU0) pru0_ctrl->ctrl = __builtin_bswap32(0xB);
+  if (PRUCore & PRU1) pru1_ctrl->ctrl = __builtin_bswap32(0xB);
 }
 
 void am335x_pru_reset(void) {}
@@ -129,14 +125,14 @@ static uint32_t am335x_pru_mem_base(PRU_RAM_t MemoryType) {
 
 void am335x_pru_memcpy(PRU_RAM_t MemoryType, uint32_t offset, uint32_t Length,
                        const uint32_t *Pointer) {
-
   uint8_t *srcaddr = (uint8_t *)Pointer;
   uint8_t *destaddr = (uint8_t *)(am335x_pru_mem_base(MemoryType) + offset);
 
   memcpy(destaddr, srcaddr, Length);
 }
 
-void am335x_pru_memset(PRU_RAM_t MemoryType, uint32_t offset, uint32_t Length, uint32_t Pattern) {
+void am335x_pru_memset(PRU_RAM_t MemoryType, uint32_t offset, uint32_t Length,
+                       uint32_t Pattern) {
   uint8_t *destaddr = (uint8_t *)(am335x_pru_mem_base(MemoryType) + offset);
   memset(destaddr, Pattern, (Length / 4));
 }

@@ -308,7 +308,7 @@ uint32_t am335x_gpio_get_states(enum am335x_gpio_modules module) {
 
 /* -------------------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
-
+#if 0
 int am335x_gpio_attach(enum am335x_gpio_modules module, uint32_t pin_nr,
                        enum am335x_gpio_interrupt_modes mode,
                        bool has_to_be_debounced, am335x_gpio_handler_t routine,
@@ -346,6 +346,7 @@ void am335x_gpio_detach(enum am335x_gpio_modules module, uint32_t pin_nr) {
     handlers[module][pin_nr].mode = 0;
   }
 }
+#endif
 
 void am335x_gpio_enable(enum am335x_gpio_modules module, uint32_t pin_nr) {
   if ((module < AM335X_GPIO_NB_MODULES) && (pin_nr < 32)) {
