@@ -45,7 +45,7 @@ typedef struct {
 	uint32_t nand_data; // 84
 	uint32_t __reserved_08;// 88
 	uint32_t __reserved_0C;// 8c
-	// c0
+	// 90...
 } am335x_gpmc_cs_config_t;
 
 /*
@@ -88,7 +88,7 @@ typedef struct {
 } am335x_gpmc_regs_t;
 
 extern void am335x_gpmc_enable_cs_config(
-		const am335x_gpmc_cs_config_t* setting,	// configuration settings
+		uint32_t* config,	// configuration settings
 		uint32_t cs,						// chip select to use (1-6)
 		uint32_t base, 						// address where GPMC ought to be
 		uint32_t size						// size of this range

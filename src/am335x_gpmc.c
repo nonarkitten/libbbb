@@ -17,13 +17,14 @@ static void writel(uint32_t value, uint32_t* address) {
 }
 
 void am335x_gpmc_enable_cs_config(
-		const am335x_gpmc_cs_config_t *setting,
+		uint32_t* config,
 		uint32_t cs,
 		uint32_t base,
 		uint32_t size)
 {
 	// Point to the GPMC config
 	am335x_gpmc_cs_config_t* _cs = (am335x_gpmc_cs_config_t*)&gpmc->cs_context[cs];
+	am335x_gpmc_cs_config_t* setting = (am335x_gpmc_cs_config_t*)config;
 
 	// Take an actual size and convert it to an address mask
 	size = (size > 0x08000000) ? GPMC_SIZE_256M :

@@ -126,8 +126,8 @@ typedef enum {
 extern void am335x_pru_init(void);
 extern void am335x_pru_reset(void);
 
-extern extern void am335x_pru_halt(PRU_CORE_t PRUCore);
-void am335x_pru_enable(PRU_CORE_t PRUCore);
+extern void am335x_pru_halt(PRU_CORE_t PRUCore);
+extern void am335x_pru_enable(PRU_CORE_t PRUCore);
 
 extern void am335x_pru_memset(PRU_RAM_t MemoryType, uint32_t offset, uint32_t Length, const uint32_t *Pointer);
 extern void am335x_pru_memcpy(PRU_RAM_t MemoryType, uint32_t offset, uint32_t Length, uint32_t Pattern);
