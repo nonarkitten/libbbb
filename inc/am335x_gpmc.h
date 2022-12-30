@@ -31,18 +31,20 @@ typedef enum {
 
 /* Structure to save gpmc cs context */
 typedef struct {
-	uint32_t config1; // 90
-	uint32_t config2; // 94
-	uint32_t config3; // 98
-	uint32_t config4; // 9c
-	uint32_t config5; // a0
-	uint32_t config6; // a4
-	uint32_t config7; // a8
-	uint32_t nand_cmd;// ac
-	uint32_t nand_address; // b0
-	uint32_t nand_data; // b4
-	uint32_t __reserved_08;// b8..
-	uint32_t __reserved_0C;// bc..
+	uint32_t config1; // 60
+	uint32_t config2; // 64
+	uint32_t config3; // 68
+	uint32_t config4; // 6c
+
+	uint32_t config5; // 70
+	uint32_t config6; // 74
+	uint32_t config7; // 78
+	uint32_t nand_cmd;// 7c
+
+	uint32_t nand_address; // 80
+	uint32_t nand_data; // 84
+	uint32_t __reserved_08;// 88
+	uint32_t __reserved_0C;// 8c
 	// c0
 } am335x_gpmc_cs_config_t;
 
@@ -86,7 +88,7 @@ typedef struct {
 } am335x_gpmc_regs_t;
 
 extern void am335x_gpmc_enable_cs_config(
-		am335x_gpmc_cs_config_t* setting,	// configuration settings
+		const am335x_gpmc_cs_config_t* setting,	// configuration settings
 		uint32_t cs,						// chip select to use (1-6)
 		uint32_t base, 						// address where GPMC ought to be
 		uint32_t size						// size of this range

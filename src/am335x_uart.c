@@ -334,6 +334,7 @@ int am335x_uart_read(enum am335x_uart_controllers ctrl)
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
     while ((uart->lsr & LSR_RX_FIFO_E) == 0)
         ;
+    asm __volatile__("nop");
     return uart->rhr;
 }
 
@@ -344,5 +345,6 @@ void am335x_uart_write(enum am335x_uart_controllers ctrl, int c)
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
     while ((uart->ssr & SSR_TX_FIFO_FULL) != 0)
         ;
+    asm __volatile__("nop");
     uart->thr = c;
 }

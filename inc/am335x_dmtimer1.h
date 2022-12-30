@@ -69,6 +69,13 @@ extern void am335x_dmtimer1_wait_us(uint32_t us);
 extern void am335x_dmtimer1_wait_ms(uint32_t ms);
 
 /**
+ * method to wait specified amount of seconds
+ * waiting timing is done in busywait mode
+ * @param s number of seconds to wait
+ */
+extern void am335x_dmtimer1_wait(double s);
+
+/**
  * method to get uptime, this method must be called a
  * little quickly that every 3 minutes
  * @return current uptime in ticks

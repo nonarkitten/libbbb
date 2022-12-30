@@ -53,16 +53,16 @@ struct timer1_ctrl {
     uint32_t tiocp_cfg;  // 10
     uint32_t tistat;     // 14
     uint32_t tisr;       // 18
-    uint32_t tier;       // 1C
+    uint32_t tier;       //ï¿½1C
     uint32_t twer;       // 20
     uint32_t tclr;       // 24
     uint32_t tcrr;       // 28
     uint32_t tldr;       // 2C
     uint32_t ttgr;       // 30
-    uint32_t twps;       // 34
+    uint32_t twps;       //ï¿½34
     uint32_t tmar;       // 38
-    uint32_t tcar1;      // 3C
-    uint32_t tsicr;      // 40
+    uint32_t tcar1;      //ï¿½3C
+    uint32_t tsicr;      //ï¿½40
     uint32_t tcar2;      // 44
     uint32_t tpir;       // 48
     uint32_t tnir;       // 4C
@@ -96,6 +96,9 @@ void am335x_dmtimer1_init()
     timer1->tcrr = 0;
     timer1->ttgr = 0;
     timer1->tclr = (TCLR_AR | TCLR_ST);
+
+    volatile uint32_t check = timer1->tcrr;
+    while(check == timer1->tcrr); 
 
     is_initialized = true;
 }
@@ -135,6 +138,17 @@ void am335x_dmtimer1_wait_ms(uint32_t ms)
     uint32_t sp     = st;
     while (((sp - st) < clocks)) {
         sp = am335x_dmtimer1_get_counter();
+    }
+}
+
+// ----------------------------------------------------------------------------
+
+void am335x_dmtimer1_wait(double s)
+{
+    double start  = am335x_dmtimer1_get_time();
+    double stop   = start + s;
+    while (start < stop) {
+        start = am335x_dmtimer1_get_time();
     }
 }
 

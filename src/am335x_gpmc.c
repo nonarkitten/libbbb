@@ -27,7 +27,7 @@ void sdelay(uint32_t loops) {
 }
 
 void am335x_gpmc_enable_cs_config(
-		am335x_gpmc_cs_config_t *setting,
+		const am335x_gpmc_cs_config_t *setting,
 		uint32_t cs,
 		uint32_t base,
 		uint32_t size)
