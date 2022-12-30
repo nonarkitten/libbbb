@@ -39,9 +39,8 @@ static inline void am335x_console_init(void) { am335x_uart_init(AM335X_UART0); }
  *
  * @param baudrate terminal baudrate value in bit/s
  */
-static inline void am335x_console_set_baudrate(uint32_t baudrate)
-{
-    am335x_uart_set_baudrate(AM335X_UART0, baudrate);
+static inline void am335x_console_set_baudrate(uint32_t baudrate) {
+  am335x_uart_set_baudrate(AM335X_UART0, baudrate);
 }
 
 /**
@@ -49,9 +48,8 @@ static inline void am335x_console_set_baudrate(uint32_t baudrate)
  *
  * @return true if character available, false otherwise
  */
-static inline bool am335x_console_tstc(void)
-{
-    return am335x_uart_tstc(AM335X_UART0);
+static inline bool am335x_console_tstc(void) {
+  return am335x_uart_tstc(AM335X_UART0);
 }
 
 /**
@@ -60,9 +58,8 @@ static inline bool am335x_console_tstc(void)
  *
  * @return character received on the serial interface
  */
-static inline int am335x_console_getc(void)
-{
-    return am335x_uart_read(AM335X_UART0);
+static inline int am335x_console_getc(void) {
+  return am335x_uart_read(AM335X_UART0);
 }
 
 /**
@@ -71,11 +68,10 @@ static inline int am335x_console_getc(void)
  *
  * @param c character to send on the serial interface
  */
-static inline void am335x_console_putc(char c)
-{
-    am335x_uart_write(AM335X_UART0, c);
-    if (c == '\n') am335x_uart_write(AM335X_UART0, '\r');
-    if (c == '\r') am335x_uart_write(AM335X_UART0, '\n');
+static inline void am335x_console_putc(char c) {
+  am335x_uart_write(AM335X_UART0, c);
+  if (c == '\n') am335x_uart_write(AM335X_UART0, '\r');
+  if (c == '\r') am335x_uart_write(AM335X_UART0, '\n');
 }
 
 /**
@@ -83,9 +79,8 @@ static inline void am335x_console_putc(char c)
  *
  * @param s character string to send on the serial interface
  */
-static inline void am335x_console_puts(const char* s)
-{
-    while (*s) am335x_console_putc(*s++);
+static inline void am335x_console_puts(const char* s) {
+  while (*s) am335x_console_putc(*s++);
 }
 
 #endif

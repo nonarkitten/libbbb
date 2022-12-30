@@ -47,70 +47,62 @@
 /**
  * DMTimer1 Register Definition
  */
-struct timer1_ctrl {
-    uint32_t tidr;       // 00
-    uint32_t res1[3];    // 04-0C
-    uint32_t tiocp_cfg;  // 10
-    uint32_t tistat;     // 14
-    uint32_t tisr;       // 18
-    uint32_t tier;       //�1C
-    uint32_t twer;       // 20
-    uint32_t tclr;       // 24
-    uint32_t tcrr;       // 28
-    uint32_t tldr;       // 2C
-    uint32_t ttgr;       // 30
-    uint32_t twps;       //�34
-    uint32_t tmar;       // 38
-    uint32_t tcar1;      //�3C
-    uint32_t tsicr;      //�40
-    uint32_t tcar2;      // 44
-    uint32_t tpir;       // 48
-    uint32_t tnir;       // 4C
-    uint32_t tcvr;       // 50
-    uint32_t tocr;       // 54
-    uint32_t towr;       // 5C
-};
-
-/**
- * DMTimer1 registers
- */
-static volatile struct timer1_ctrl* timer1 =
-    (volatile struct timer1_ctrl*)0x44e31000;
+static volatile struct timer1_ctrl {
+  uint32_t tidr;       // 00
+  uint32_t res1[3];    // 04-0c
+  uint32_t tiocp_cfg;  // 10
+  uint32_t tistat;     // 14
+  uint32_t tisr;       // 18
+  uint32_t tier;       // 1c
+  uint32_t twer;       // 20
+  uint32_t tclr;       // 24
+  uint32_t tcrr;       // 28
+  uint32_t tldr;       // 2c
+  uint32_t ttgr;       // 30
+  uint32_t twps;       // 34
+  uint32_t tmar;       // 38
+  uint32_t tcar1;      // 3c
+  uint32_t tsicr;      // 40
+  uint32_t tcar2;      // 44
+  uint32_t tpir;       // 48
+  uint32_t tnir;       // 4c
+  uint32_t tcvr;       // 50
+  uint32_t tocr;       // 54
+  uint32_t towr;       // 5c
+}* timer1 = (volatile struct timer1_ctrl*)0x44e31000;
 
 // -- Public methods definition -----------------------------------------------
 
-void am335x_dmtimer1_init()
-{
-    static bool is_initialized = false;
-    if (is_initialized) return;
-
-    // configure DMTimer1 for internal use (resolution 24MHz)
+void am335x_dmtimer1_init() {
+  static bool is_initialized = false;
+  printf("...Entering %s\n", __func__);
+  printf("...timer1 @ 0x%p\n", (uint32_t)timer1);
+  if (!is_initialized) {
+    printf("...Configure DMTimer1 for internal use (resolution 24MHz)\n");
     am335x_clock_enable_timer_module(AM335X_CLOCK_TIMER1);
 
-    // force a software reset
-    timer1->tiocp_cfg = (TIOCP_CFG_SOFTRESET);
-    while ((timer1->tistat & (TISTAT_RESETDONE)) == 0)
-        ;
+    printf("...Forcing timer reset\n");
+    timer1->tiocp_cfg = __builtin_bswap32(TIOCP_CFG_SOFTRESET);
 
+    printf("...Waiting for software reset to complete\n");
+    while ((timer1->tistat & __builtin_bswap32(TISTAT_RESETDONE)) == 0)
+      continue;
+
+    printf("...Completing initialization\n");
     timer1->tldr = 0;
     timer1->tcrr = 0;
     timer1->ttgr = 0;
-    timer1->tclr = (TCLR_AR | TCLR_ST);
-
-    volatile uint32_t check = timer1->tcrr;
-    while(check == timer1->tcrr); 
+    timer1->tclr = __builtin_bswap32(TCLR_AR | TCLR_ST);
 
     is_initialized = true;
+  }
+  printf("...Exiting %s\n", __func__);
 }
 
 // ----------------------------------------------------------------------------
 
-uint32_t am335x_dmtimer1_get_counter() { return (timer1->tcrr); }
-
-// ----------------------------------------------------------------------------
-
 double am335x_dmtimer1_get_time() {
-    return ((double)am335x_dmtimer1_get_counter()) / ((double)FREQUENCY);
+  return __builtin_bswap32(timer1->tcrr) / (double)FREQUENCY;
 }
 
 // ----------------------------------------------------------------------------
@@ -119,47 +111,33 @@ uint32_t am335x_dmtimer1_get_frequency() { return FREQUENCY; }
 
 // ----------------------------------------------------------------------------
 
-void am335x_dmtimer1_wait_us(uint32_t us)
-{
-    uint32_t clocks = us * (FREQUENCY / 1000000) + 1;
-    uint32_t st     = am335x_dmtimer1_get_counter();
-    uint32_t sp     = st;
-    while (((sp - st) < clocks)) {
-        sp = am335x_dmtimer1_get_counter();
-    }
+void am335x_dmtimer1_wait_us(uint32_t us) {
+  uint32_t clocks = us * (FREQUENCY / 1000000) + 1;
+  uint32_t st = __builtin_bswap32(timer1->tcrr);
+  uint32_t sp = st;
+  while (((sp - st) < clocks)) {
+    sp = __builtin_bswap32(timer1->tcrr);
+  }
 }
 
 // ----------------------------------------------------------------------------
 
-void am335x_dmtimer1_wait_ms(uint32_t ms)
-{
-    uint32_t clocks = ms * (FREQUENCY / 1000) + 1;
-    uint32_t st     = am335x_dmtimer1_get_counter();
-    uint32_t sp     = st;
-    while (((sp - st) < clocks)) {
-        sp = am335x_dmtimer1_get_counter();
-    }
+void am335x_dmtimer1_wait_ms(uint32_t ms) {
+  uint32_t clocks = ms * (FREQUENCY / 1000) + 1;
+  uint32_t st = __builtin_bswap32(timer1->tcrr);
+  uint32_t sp = st;
+  while (((sp - st) < clocks)) {
+    sp = __builtin_bswap32(timer1->tcrr);
+  }
 }
 
 // ----------------------------------------------------------------------------
 
-void am335x_dmtimer1_wait(double s)
-{
-    double start  = am335x_dmtimer1_get_time();
-    double stop   = start + s;
-    while (start < stop) {
-        start = am335x_dmtimer1_get_time();
-    }
-}
-
-// ----------------------------------------------------------------------------
-
-uint64_t am335x_dmtimer1_get_uptime()
-{
-    static uint32_t st     = 0;
-    static uint64_t uptime = 0;
-    uint32_t sp            = am335x_dmtimer1_get_counter();
-    uptime += sp - st;
-    st = sp;
-    return uptime;
+uint64_t am335x_dmtimer1_get_uptime() {
+  static uint32_t st = 0;
+  static uint64_t uptime = 0;
+  uint32_t sp = __builtin_bswap32(timer1->tcrr);
+  uptime += sp - st;
+  st = sp;
+  return uptime;
 }

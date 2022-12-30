@@ -28,46 +28,47 @@
  */
 
 #include "am335x_i2c.h"
+
 #include "am335x_clock.h"
 #include "am335x_mux.h"
 
 // define am335x i2c controller registers
 struct am335x_i2c_ctrl {
-    uint32_t revnb_lo;         // 00
-    uint32_t revnb_hi;         // 04
-    uint32_t res1[2];          // 08-0c
-    uint32_t sysc;             // 10
-    uint32_t res2[4];          // 14-20
-    uint32_t irqstatus_raw;    // 24
-    uint32_t irqstatus;        // 28
-    uint32_t irqenable_set;    // 2c
-    uint32_t irqenable_clr;    // 30
-    uint32_t we;               // 34
-    uint32_t dmarxenable_set;  // 38
-    uint32_t dmatxenable_set;  // 3c
-    uint32_t dmarxenable_clr;  // 40
-    uint32_t dmatxenable_clr;  // 44
-    uint32_t dmarxwake_en;     // 48
-    uint32_t dmatxwake_en;     // 4c
-    uint32_t res3[16];         // 50-8c
-    uint32_t syss;             // 90
-    uint32_t buf;              // 94
-    uint32_t cnt;              // 98
-    uint32_t data;             // 9c
-    uint32_t res4[1];          // a0
-    uint32_t con;              // a4
-    uint32_t oa;               // a8
-    uint32_t sa;               // ac
-    uint32_t psc;              // b0
-    uint32_t scll;             // b4
-    uint32_t sclh;             // b8
-    uint32_t systest;          // bc
-    uint32_t bufstat;          // c0
-    uint32_t oa1;              // c4
-    uint32_t oa2;              // c8
-    uint32_t oa3;              // cc
-    uint32_t actoa;            // d0
-    uint32_t sblock;           // d4
+  uint32_t revnb_lo;         // 00
+  uint32_t revnb_hi;         // 04
+  uint32_t res1[2];          // 08-0c
+  uint32_t sysc;             // 10
+  uint32_t res2[4];          // 14-20
+  uint32_t irqstatus_raw;    // 24
+  uint32_t irqstatus;        // 28
+  uint32_t irqenable_set;    // 2c
+  uint32_t irqenable_clr;    // 30
+  uint32_t we;               // 34
+  uint32_t dmarxenable_set;  // 38
+  uint32_t dmatxenable_set;  // 3c
+  uint32_t dmarxenable_clr;  // 40
+  uint32_t dmatxenable_clr;  // 44
+  uint32_t dmarxwake_en;     // 48
+  uint32_t dmatxwake_en;     // 4c
+  uint32_t res3[16];         // 50-8c
+  uint32_t syss;             // 90
+  uint32_t buf;              // 94
+  uint32_t cnt;              // 98
+  uint32_t data;             // 9c
+  uint32_t res4[1];          //  a0
+  uint32_t con;              // a4
+  uint32_t oa;               // a8
+  uint32_t sa;               // ac
+  uint32_t psc;              // b0
+  uint32_t scll;             // b4
+  uint32_t sclh;             // b8
+  uint32_t systest;          // bc
+  uint32_t bufstat;          // c0
+  uint32_t oa1;              // c4
+  uint32_t oa2;              // c8
+  uint32_t oa3;              // cc
+  uint32_t actoa;            // d0
+  uint32_t sblock;           // d4
 };
 
 // I2C SYSC register bit definition
@@ -173,216 +174,213 @@ static const enum am335x_mux_i2c_modules i2c2mux[] = {
  *@param bit bit to wait for (mask)
  *@return status information: 0 --> bit is set, -1 --> error has been detected
  */
-static int wait_for_status(volatile struct am335x_i2c_ctrl* i2c, int bit)
-{
-    int status = 0;
-    int timeout = 20000;
-    while (1) {
-        // check for malfunction...
-        status = -1;
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_AL) != 0) break;
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_AERR) != 0) break;
-        if (timeout == 0) break; else timeout--;
+static int wait_for_status(volatile struct am335x_i2c_ctrl* i2c, int bit) {
+  int status = 0;
+  int timeout = 20000;
+  while (1) {
+    // check for malfunction...
+    status = -1;
+    if ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_AL)) != 0) break;
+    if ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_AERR)) != 0)
+      break;
+    if (timeout == 0)
+      break;
+    else
+      timeout--;
 
-        // check for valid bit...
-        status = 0;
-        if ((i2c->irqstatus_raw & bit) != 0) break;
-    }
+    // check for valid bit...
+    status = 0;
+    if ((i2c->irqstatus_raw & __builtin_bswap32(bit)) != 0) break;
+  }
 
-    // clear error bits
-    i2c->irqstatus = IRQSTATUS_RAW_AL | IRQSTATUS_RAW_AERR;
+  // clear error bits
+  i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_AL | IRQSTATUS_RAW_AERR);
 
-    // return status information
-    return status;
+  // return status information
+  return status;
 }
 
 /* --------------------------------------------------------------------------
  * implementation of the public methods
  * -------------------------------------------------------------------------- */
 
-void am335x_i2c_init(enum am335x_i2c_controllers ctrl, uint32_t bus_speed)
-{
-    volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
+void am335x_i2c_init(enum am335x_i2c_controllers ctrl, uint32_t bus_speed) {
+  volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
 
-    // enable i2c module clock
-    am335x_clock_enable_i2c_module(i2c2clock[ctrl]);
+  //  enable i2c module clock
+  am335x_clock_enable_i2c_module(i2c2clock[ctrl]);
 
-    // setup i2c pins
-    am335x_mux_setup_i2c_pins(i2c2mux[ctrl]);
+  // setup i2c pins
+  am335x_mux_setup_i2c_pins(i2c2mux[ctrl]);
 
-    // reset and disable i2c controller
-    i2c->sysc = SYSC_SRST;
-    while ((i2c->syss & SYSS_RDONE) != 0)
-        ;
-    i2c->con &= ~CON_I2C_EN;
+  // reset and disable i2c controller
+  i2c->sysc = __builtin_bswap32(SYSC_SRST);
+  while ((i2c->syss & __builtin_bswap32(SYSS_RDONE)) != 0)
+    ;
+  i2c->con &= ~__builtin_bswap32(CON_I2C_EN);
 
-    // configure clock activity and idle mode
-    i2c->sysc = SYSC_IDLEMODE_NOIDLE | SYSC_CLKACTIVITY_BOTH;
+  // configure clock activity and idle mode
+  i2c->sysc = __builtin_bswap32(SYSC_IDLEMODE_NOIDLE | SYSC_CLKACTIVITY_BOTH);
 
-    // configure i2c bus speed
-    i2c->psc         = (SYSTEM_CLOCK / INTERNAL_CLOCK) - 1;
-    uint32_t divider = (INTERNAL_CLOCK / 2) / bus_speed;
-    i2c->scll        = divider - 7;
-    i2c->sclh        = divider - 5;
+  // configure i2c bus speed
+  i2c->psc = __builtin_bswap32(SYSTEM_CLOCK / INTERNAL_CLOCK) - 1;
+  uint32_t divider = (INTERNAL_CLOCK / 2) / bus_speed;
+  i2c->scll = __builtin_bswap32(divider - 7);
+  i2c->sclh = __builtin_bswap32(divider - 5);
 
-    // enable i2c contoller
-    i2c->con |= CON_I2C_EN;
+  //  enable i2c contoller
+  i2c->con |= __builtin_bswap32(CON_I2C_EN);
 }
 
 /* -------------------------------------------------------------------------- */
 
-int am335x_i2c_read(enum am335x_i2c_controllers ctrl,
-                    uint8_t chip_id,
-                    uint8_t reg,
-                    uint8_t* data,
-                    uint16_t data_len)
-{
-    volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
+int am335x_i2c_read(enum am335x_i2c_controllers ctrl, uint8_t chip_id,
+                    uint8_t reg, uint8_t* data, uint16_t data_len) {
+  volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
 
-    // clear buffers and former pending status flags
-    i2c->buf |= BUF_RXFIFO_CLR | BUF_TXFIFO_CLR;
-    i2c->irqstatus = IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF;
+  // clear buffers and former pending status flags
+  i2c->buf |= __builtin_bswap32(BUF_RXFIFO_CLR | BUF_TXFIFO_CLR);
+  i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF);
 
-    // poll bus busy condition
-    while ((i2c->irqstatus_raw & IRQSTATUS_RAW_BB) != 0)
-        ;
+  // poll bus busy condition
+  while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_BB)) != 0)
+    ;
 
-    // set slave address (identification of the slave chip)
-    i2c->sa = chip_id;
+  // set slave address (identification of the slave chip)
+  i2c->sa = __builtin_bswap32(chip_id);
 
-    // --- write command word if required
-    // define number of byte to transfer
-    i2c->cnt = 1;
+  // --- write command word if required
+  // define number of byte to transfer
+  i2c->cnt = __builtin_bswap32(1);
 
-    // start transfer as master & transmitter
-    i2c->con |= CON_MST | CON_TRX | CON_STT | CON_STP;
+  // start transfer as master & transmitter
+  i2c->con |= __builtin_bswap32(CON_MST | CON_TRX | CON_STT | CON_STP);
 
+  // wait for sending data bytes
+  while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_XRDY)) == 0)
+    ;
+  i2c->data = __builtin_bswap32(reg);
+
+  // wait until transfer complete and check if done correctly
+  if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
+    if ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_NACK)) != 0)
+      return -1;
+  }
+
+  // --- read specified number of data bytes
+  // indicate number of bytes to read
+  i2c->cnt = __builtin_bswap32(data_len);
+
+  // initiate read data transfer
+  i2c->con = (i2c->con & ~__builtin_bswap32(CON_TRX)) |
+             __builtin_bswap32(CON_MST | CON_STT | CON_STP);
+
+  // wait until data received and read them
+  while (data_len > 0) {
+    while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_RRDY)) == 0)
+      ;
+    *data++ = __builtin_bswap32(i2c->data);
+    data_len--;
+    i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_RRDY);
+  }
+
+  // acknowlegde all status information
+  i2c->irqstatus = i2c->irqstatus_raw;
+
+  return 0;
+}
+
+/* -------------------------------------------------------------------------- */
+
+int am335x_i2c_write(enum am335x_i2c_controllers ctrl, uint8_t chip_id,
+                     uint8_t reg, const uint8_t* data, uint16_t data_len) {
+  volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
+
+  // clear buffers and former pending status flags
+  i2c->buf |= __builtin_bswap32(BUF_RXFIFO_CLR | BUF_TXFIFO_CLR);
+  i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF);
+
+  // poll bus busy condition
+  while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_BB)) != 0)
+    ;
+
+  // set slave address (identification of the slave chip)
+  i2c->sa = __builtin_bswap32(chip_id);
+
+  // define number of byte to transfer
+  i2c->cnt = __builtin_bswap32(1 + data_len);
+
+  // start transfer as master & transmitter
+  i2c->con |= __builtin_bswap32(CON_MST | CON_TRX | CON_STT | CON_STP);
+
+  // --- write command word
+  // wait for sending data bytes
+  while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_XRDY)) == 0)
+    ;
+  i2c->data = __builtin_bswap32(reg);
+
+  // --- write specified number of data bytes
+  // wait until data received and read them
+  while (data_len > 0) {
     // wait for sending data bytes
-    while ((i2c->irqstatus_raw & IRQSTATUS_RAW_XRDY) == 0)
-        ;
-    i2c->data = reg;
+    while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_XRDY)) == 0)
+      ;
+    i2c->data = __builtin_bswap32(*data++);
+    i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_XRDY);
+    data_len--;
+  }
 
-    // wait until transfer complete and check if done correctly
-    if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0) return -1;
-    }
+  // wait until transfer complete and check if done correctly
+  if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
+    if ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_NACK)) != 0)
+      return -1;
+  }
 
-    // --- read specified number of data bytes
-    // indicate number of bytes to read
-    i2c->cnt = data_len;
+  // acknowlegde all status information
+  i2c->irqstatus = i2c->irqstatus_raw;
 
-    // initiate read data transfer
-    i2c->con = (i2c->con & ~CON_TRX) | CON_MST | CON_STT | CON_STP;
-
-    // wait until data received and read them
-    while (data_len > 0) {
-        while ((i2c->irqstatus_raw & IRQSTATUS_RAW_RRDY) == 0)
-            ;
-        *data++ = i2c->data;
-        data_len--;
-        i2c->irqstatus = IRQSTATUS_RAW_RRDY;
-    }
-
-    // acknowlegde all status information
-    i2c->irqstatus = i2c->irqstatus_raw;
-
-    return 0;
+  return 0;
 }
 
 /* -------------------------------------------------------------------------- */
+__attribute__((optimize(0))) bool am335x_i2c_probe(
+    enum am335x_i2c_controllers ctrl, uint8_t chip_id) {
+  volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
+  bool found = false;
 
-int am335x_i2c_write(enum am335x_i2c_controllers ctrl,
-                     uint8_t chip_id,
-                     uint8_t reg,
-                     const uint8_t* data,
-                     uint16_t data_len)
-{
-    volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
+  // clear former pending status flags
+  i2c->irqstatus = __builtin_bswap32(IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF);
 
-    // clear buffers and former pending status flags
-    i2c->buf |= BUF_RXFIFO_CLR | BUF_TXFIFO_CLR;
-    i2c->irqstatus = IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF;
+  //  poll until bus busy condition is false
+  while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_BB)) != 0)
+    ;
 
-    // poll bus busy condition
-    while ((i2c->irqstatus_raw & IRQSTATUS_RAW_BB) != 0)
-        ;
+  // set slave address (identification of the slave chip)
+  i2c->sa = __builtin_bswap32(chip_id);
 
-    // set slave address (identification of the slave chip)
-    i2c->sa = chip_id;
+  // set minimum number of byte to transfer (required by i2c controller)
+  i2c->cnt = __builtin_bswap32(1);
 
-    // define number of byte to transfer
-    i2c->cnt = 1 + data_len;
+  // start transfer as master & receiver
+  i2c->con = (i2c->con & ~__builtin_bswap32(CON_TRX)) |
+             __builtin_bswap32(CON_MST | CON_STT | CON_STP);
 
-    // start transfer as master & transmitter
-    i2c->con |= CON_MST | CON_TRX | CON_STT | CON_STP;
+  // wait until transfer complete and check chip presence
+  // if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
+  wait_for_status(i2c, IRQSTATUS_RAW_BF);
+  found = (i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_NACK)) == 0;
+  //}
 
-    // --- write command word
-    // wait for sending data bytes
-    while ((i2c->irqstatus_raw & IRQSTATUS_RAW_XRDY) == 0)
-        ;
-    i2c->data = reg;
+  // if device exists, then read dummy data byte and clear rx fifo
+  if (found) {
+    while ((i2c->irqstatus_raw & __builtin_bswap32(IRQSTATUS_RAW_RRDY)) == 0)
+      ;
+    uint32_t data = __builtin_bswap32(i2c->data);
+    (void)data;
+  }
 
-    // --- write specified number of data bytes
-    // wait until data received and read them
-    while (data_len > 0) {
-        // wait for sending data bytes
-        while ((i2c->irqstatus_raw & IRQSTATUS_RAW_XRDY) == 0)
-            ;
-        i2c->data      = *data++;
-        i2c->irqstatus = IRQSTATUS_RAW_XRDY;
-        data_len--;
-    }
+  // acknowlegde all status information
+  i2c->irqstatus = i2c->irqstatus_raw;
 
-    // wait until transfer complete and check if done correctly
-    if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
-        if ((i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) != 0) return -1;
-    }
-
-    // acknowlegde all status information
-    i2c->irqstatus = i2c->irqstatus_raw;
-
-    return 0;
-}
-
-/* -------------------------------------------------------------------------- */
-__attribute__((optimize(0)))
-bool am335x_i2c_probe(enum am335x_i2c_controllers ctrl, uint8_t chip_id)
-{
-    volatile struct am335x_i2c_ctrl* i2c = i2c_ctrl[ctrl];
-    bool found                           = false;
-
-    // clear former pending status flags
-    i2c->irqstatus = IRQSTATUS_RAW_NACK | IRQSTATUS_RAW_BF;
-
-    // poll until bus busy condition is false
-    while ((i2c->irqstatus_raw & IRQSTATUS_RAW_BB) != 0)
-        ;
-
-    // set slave address (identification of the slave chip)
-    i2c->sa = chip_id;
-
-    // set minimum number of byte to transfer (required by i2c controller)
-    i2c->cnt = 1;
-
-    // start transfer as master & receiver
-    i2c->con = (i2c->con & ~CON_TRX) | CON_MST | CON_STT | CON_STP;
-
-    // wait until transfer complete and check chip presence
-    //if (wait_for_status(i2c, IRQSTATUS_RAW_BF) == 0) {
-    wait_for_status(i2c, IRQSTATUS_RAW_BF);
-        found = (i2c->irqstatus_raw & IRQSTATUS_RAW_NACK) == 0;
-    //}
-
-    // if device exists, then read dummy data byte and clear rx fifo
-    if (found) {
-        while ((i2c->irqstatus_raw & IRQSTATUS_RAW_RRDY) == 0)
-            ;
-        uint32_t data = i2c->data;
-        (void)data;
-    }
-
-    // acknowlegde all status information
-    i2c->irqstatus = i2c->irqstatus_raw;
-
-    return found;
+  return found;
 }

@@ -12,18 +12,8 @@
 static volatile const am335x_gpmc_regs_t* gpmc = (am335x_gpmc_regs_t*)0x50000000;
 
 static void writel(uint32_t value, uint32_t* address) {
-	*(volatile uint32_t*)address = (value);
+	*(volatile uint32_t*)address = __builtin_bswap32(value);
 	asm volatile("" : : : "memory");
-}
-
-void sdelay(uint32_t loops) {
-	__asm__ volatile (
-			"\n1:\n\t"
-			"subs %0, %1, #1\n\t"
-			"bne 1b"
-			: "=r" (loops)
-			: "0" (loops)
-	);
 }
 
 void am335x_gpmc_enable_cs_config(

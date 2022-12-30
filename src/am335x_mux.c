@@ -31,6 +31,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Endian unsafe
+#if 0
+
 // pad control register bit definition
 #define PAD_CONTROL_SLEWCTRL (1 << 6)
 #define PAD_CONTROL_RXACTIVE (1 << 5)
@@ -511,3 +514,5 @@ void am335x_mux_setup_cpsw_pins(void)
     pad_cfg(&pad->mii_txd2);
     pad_cfg(&pad->mii_txd3);
 }
+
+#endif

@@ -24,6 +24,9 @@
  * Date:    23.11.2019
  */
 
+// Endian unsafe
+#if 0
+
 #include "am335x_clock.h"
 #include "am335x_mux.h"
 #include <stdbool.h>
@@ -273,3 +276,5 @@ void am335x_epwm_set_duty(enum am335x_epwm_controllers ctrl, uint32_t duty)
     }
     cfg[ctrl].duty = duty;
 }
+
+#endif

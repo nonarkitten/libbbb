@@ -258,39 +258,39 @@ void am335x_uart_init(enum am335x_uart_controllers ctrl)
     am335x_mux_setup_uart_pins(uart2mux[ctrl]);
 
     // reset uart controller and wait until reset complete
-    uart->sysc |= SYSC_SOFTRESET;
-    while ((uart->syss & SYSS_RESETDONE) == 0)
+    uart->sysc |= __builtin_bswap32(SYSC_SOFTRESET);
+    while ((uart->syss & __builtin_bswap32(SYSS_RESETDONE)) == 0)
         ;
 
     // perform fifo configuration
-    uart->lcr    = LCR_OPMODE_B;     // switch to configuration mode B
+    uart->lcr    = __builtin_bswap32(LCR_OPMODE_B);     // switch to configuration mode B
     uint32_t efr = uart->efr;        // save efr register
-    uart->efr    = EFR_ENHANCED_EN;  // enable writing to IER, FCR & MCR regs
+    uart->efr    = __builtin_bswap32(EFR_ENHANCED_EN);  // enable writing to IER, FCR & MCR regs
     uint32_t lcr = uart->lcr;        // save lcr register
-    uart->lcr    = LCR_OPMODE_A;     // switch to configuration mode A
+    uart->lcr    = __builtin_bswap32(LCR_OPMODE_A);     // switch to configuration mode A
     uint32_t mcr = uart->mcr;        // save mcr register
-    uart->mcr    = MCR_TCR_TLR;      // enable access to TCR & TLR regs
-    uart->fcr    = FCR_RX_FIFO_TRIG_60CHAR | FCR_TX_FIFO_TRIG_56SPACES |
-                FCR_TX_FIFO_CLEAR | FCR_RX_FIFO_CLEAR | FCR_FIFO_EN;
+    uart->mcr    = __builtin_bswap32(MCR_TCR_TLR);      // enable access to TCR & TLR regs
+    uart->fcr    = __builtin_bswap32(FCR_RX_FIFO_TRIG_60CHAR | FCR_TX_FIFO_TRIG_56SPACES |
+                FCR_TX_FIFO_CLEAR | FCR_RX_FIFO_CLEAR | FCR_FIFO_EN);
 
-    uart->lcr = LCR_OPMODE_B;           // switch to configuration mode B
-    uart->tlr = (60 << 4) + (56 << 0);  // set new fifo trigger level
+    uart->lcr = __builtin_bswap32(LCR_OPMODE_B);           // switch to configuration mode B
+    uart->tlr = __builtin_bswap32((60 << 4) + (56 << 0));  // set new fifo trigger level
     uart->scr = 0;                      // disable all...
     uart->efr = efr;                    // restore efr register
-    uart->lcr = LCR_OPMODE_A;           // switch to configuration mode A
+    uart->lcr = __builtin_bswap32(LCR_OPMODE_A);           // switch to configuration mode A
     uart->mcr = mcr;                    // restore mcr register
     uart->lcr = lcr;                    // restore lcr register
 
     // disable all interrupts and program line characteristics
-    uart->mdr1 = MDR1_MODE_SELECT_DISABLED;  // disable uart
-    uart->lcr  = LCR_OPMODE_B;               // switch to configuration mode B
+    uart->mdr1 = __builtin_bswap32(MDR1_MODE_SELECT_DISABLED);  // disable uart
+    uart->lcr  = __builtin_bswap32(LCR_OPMODE_B);               // switch to configuration mode B
     efr        = uart->efr;                  // save efr register
-    uart->efr  = EFR_ENHANCED_EN;    // enable writing to IER, FCR & MCR regs
-    uart->lcr  = LCR_OPMODE_NORMAL;  // switch mode access IER register
+    uart->efr  = __builtin_bswap32(EFR_ENHANCED_EN);    // enable writing to IER, FCR & MCR regs
+    uart->lcr  = __builtin_bswap32(LCR_OPMODE_NORMAL);  // switch mode access IER register
     uart->ier  = 0x0;                // clear IER bits
-    uart->lcr  = LCR_OPMODE_B;
+    uart->lcr  = __builtin_bswap32(LCR_OPMODE_B);
     uart->efr  = efr;                   // restore efr register
-    uart->lcr  = LCR_CHAR_LENGTH_8BIT;  // 8 bit char
+    uart->lcr  = __builtin_bswap32(LCR_CHAR_LENGTH_8BIT);  // 8 bit char
 
     // perform baudrate configuration
     am335x_uart_set_baudrate(ctrl, DEFAULT_BAUDRATE);
@@ -304,19 +304,19 @@ void am335x_uart_set_baudrate(enum am335x_uart_controllers ctrl,
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
 
     // disable uart
-    uart->mdr1 = MDR1_MODE_SELECT_DISABLED;
+    uart->mdr1 = __builtin_bswap32(MDR1_MODE_SELECT_DISABLED);
 
     // configure divider value
     uint32_t lcr = uart->lcr;
-    uart->lcr    = LCR_OPMODE_B;
+    uart->lcr    = __builtin_bswap32(LCR_OPMODE_B);
     if (baudrate > 230400) baudrate = 230400;
     uint32_t divider = (UART_MODULE_INPUT_CLOCK / 16) / baudrate;
-    uart->dlh        = divider / 256;
-    uart->dll        = divider % 256;
+    uart->dlh        = __builtin_bswap32(divider / 256);
+    uart->dll        = __builtin_bswap32(divider % 256);
     uart->lcr        = lcr;
 
     // select uart 16x mode
-    uart->mdr1 = MDR1_MODE_SELECT_UART16X;
+    uart->mdr1 = __builtin_bswap32(MDR1_MODE_SELECT_UART16X);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -324,7 +324,7 @@ void am335x_uart_set_baudrate(enum am335x_uart_controllers ctrl,
 bool am335x_uart_tstc(enum am335x_uart_controllers ctrl)
 {
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
-    return ((uart->lsr & LSR_RX_FIFO_E) != 0);
+    return ((uart->lsr & __builtin_bswap32(LSR_RX_FIFO_E)) != 0);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -332,10 +332,10 @@ bool am335x_uart_tstc(enum am335x_uart_controllers ctrl)
 int am335x_uart_read(enum am335x_uart_controllers ctrl)
 {
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
-    while ((uart->lsr & LSR_RX_FIFO_E) == 0)
+    while ((uart->lsr & __builtin_bswap32(LSR_RX_FIFO_E)) == 0)
         ;
     asm __volatile__("nop");
-    return uart->rhr;
+    return __builtin_bswap32(uart->rhr);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -343,8 +343,8 @@ int am335x_uart_read(enum am335x_uart_controllers ctrl)
 void am335x_uart_write(enum am335x_uart_controllers ctrl, int c)
 {
     volatile struct am335x_uart_ctrl* uart = uart_ctrl[ctrl];
-    while ((uart->ssr & SSR_TX_FIFO_FULL) != 0)
+    while ((uart->ssr & __builtin_bswap32(SSR_TX_FIFO_FULL)) != 0)
         ;
     asm __volatile__("nop");
-    uart->thr = c;
+    uart->thr = __builtin_bswap32(c);
 }

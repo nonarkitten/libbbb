@@ -34,78 +34,100 @@
  * am335x uart clock modules
  */
 enum am335x_clock_uart_modules {
-    AM335X_CLOCK_UART0,
-    AM335X_CLOCK_UART1,
-    AM335X_CLOCK_UART2,
-    AM335X_CLOCK_UART3,
-    AM335X_CLOCK_UART4,
-    AM335X_CLOCK_UART5,
+  AM335X_CLOCK_UART0,
+  AM335X_CLOCK_UART1,
+  AM335X_CLOCK_UART2,
+  AM335X_CLOCK_UART3,
+  AM335X_CLOCK_UART4,
+  AM335X_CLOCK_UART5,
 };
 
 /**
  * am335x gpio clock modules
  */
 enum am335x_clock_gpio_modules {
-    AM335X_CLOCK_GPIO0,
-    AM335X_CLOCK_GPIO1,
-    AM335X_CLOCK_GPIO2,
-    AM335X_CLOCK_GPIO3,
+  AM335X_CLOCK_GPIO0,
+  AM335X_CLOCK_GPIO1,
+  AM335X_CLOCK_GPIO2,
+  AM335X_CLOCK_GPIO3,
 };
 
 /**
  * am335x i2c clock modules
  */
 enum am335x_clock_i2c_modules {
-    AM335X_CLOCK_I2C0,
-    AM335X_CLOCK_I2C1,
-    AM335X_CLOCK_I2C2,
+  AM335X_CLOCK_I2C0,
+  AM335X_CLOCK_I2C1,
+  AM335X_CLOCK_I2C2,
 };
 
 /**
  * am335x i2c clock modules
  */
 enum am335x_clock_spi_modules {
-    AM335X_CLOCK_SPI0,
-    AM335X_CLOCK_SPI1,
+  AM335X_CLOCK_SPI0,
+  AM335X_CLOCK_SPI1,
 };
 
 /**
  * am335x timer clock modules
  */
 enum am335x_clock_timer_modules {
-    AM335X_CLOCK_TIMER0,
-    AM335X_CLOCK_TIMER1,
-    AM335X_CLOCK_TIMER2,
-    AM335X_CLOCK_TIMER3,
-    AM335X_CLOCK_TIMER4,
-    AM335X_CLOCK_TIMER5,
-    AM335X_CLOCK_TIMER6,
-    AM335X_CLOCK_TIMER7
+  AM335X_CLOCK_TIMER0,
+  AM335X_CLOCK_TIMER1,
+  AM335X_CLOCK_TIMER2,
+  AM335X_CLOCK_TIMER3,
+  AM335X_CLOCK_TIMER4,
+  AM335X_CLOCK_TIMER5,
+  AM335X_CLOCK_TIMER6,
+  AM335X_CLOCK_TIMER7
 };
 
 /**
  * am335x mmc clock modules
  */
 enum am335x_clock_mmc_modules {
-    AM335X_CLOCK_MMC0,
-    AM335X_CLOCK_MMC1,
-    AM335X_CLOCK_MMC2
+  AM335X_CLOCK_MMC0,
+  AM335X_CLOCK_MMC1,
+  AM335X_CLOCK_MMC2
 };
 
 /**
  * am335x epwm clock modules
  */
 enum am335x_clock_epwm_modules {
-    AM335X_CLOCK_EPWM0,
-    AM335X_CLOCK_EPWM1,
-    AM335X_CLOCK_EPWM2
+  AM335X_CLOCK_EPWM0,
+  AM335X_CLOCK_EPWM1,
+  AM335X_CLOCK_EPWM2
 };
+
+/**
+ * method to initialize Core DPLL
+ * CLKDCOLDO      2000MHZ
+ * CORE_CLKOUTM6  500MHz
+ * CORE_CLKOUTM4  200MHz
+ * CORE_CLKOUTM5  250MHz
+ */
+extern void am335x_clock_init_core_pll(void);
+
+/**
+ * method to initialize MPU DPLL
+ * expects the clock speed in MHz
+ */
+extern void am335x_clock_init_mpu_pll(int clock);
+
+/**
+ * method to initialize peripheral DPLL.
+ * CLKDCOLDO 960MHZ
+ * CLKOUT    192MHZ
+ */
+extern void am335x_clock_init_per_pll(void);
 
 /**
  * method to ramalamadingdong the PRUs
  */
-//void am335x_clock_reset_pru(void);
-//void am335x_clock_enable_pru(void);
+// void am335x_clock_reset_pru(void);
+// void am335x_clock_enable_pru(void);
 
 /**
  * method to ramalamadingdong the GPMC
