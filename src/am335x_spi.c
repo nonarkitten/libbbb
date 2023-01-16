@@ -192,7 +192,7 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
   chan->chctrl = __builtin_bswap32(extclk << 8);
 
   // setup spi pins
-  am335x_mux_setup_spi_pins(spi2mux[ctrl]);
+//   am335x_mux_setup_spi_pins(spi2mux[ctrl]);
 }
 
 /* -------------------------------------------------------------------------- */

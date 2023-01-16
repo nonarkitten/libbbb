@@ -301,7 +301,7 @@ void am335x_clock_init_core_pll(void) {
   bypass_pll(wkup->clkmode_dpll_core, wkup->idlest_dpll_core);
 
   /*Set DPLL multiplier factor 1000 and ref clock */
-  wkup->clksel_dpll_core = __builtin_bswap32((1000 << 11) | (24 - 1));
+  wkup->clksel_dpll_core = __builtin_bswap32((1000 << 8) | (24 - 1));
   /*Set DPLL post-divider factor M4*/
   wkup->div_m4_dpll_core = __builtin_bswap32(10);
   /*Set DPLL post-divider factor M5*/
@@ -337,7 +337,7 @@ void am335x_clock_init_per_pll(void) {
 
   wkup->clksel_dpll_mpu =
       __builtin_bswap32((4 << 24) |   /*Set DPLL Sigma-Delta divider*/
-                        (960 << 12) | /*Set DPLL multiplier factor *960*/
+                        (960 << 8) | /*Set DPLL multiplier factor *960*/
                         (24 - 1));    /*Set DPLL divider factor*/
 
   /*Set DPLL post-divider factor M2*/
@@ -345,6 +345,29 @@ void am335x_clock_init_per_pll(void) {
 
   /*Wait DPLL locks*/
   lock_pll(wkup->clkmode_dpll_per, wkup->idlest_dpll_per);
+}
+
+void am335x_clock_init_ddr_pll(int dram_clock) {
+  /*DPLL in bypass*/
+  bypass_pll(wkup->clkmode_dpll_ddr, wkup->idlest_dpll_ddr);
+
+  /*disable Spread Spectrum Clocking*/
+  wkup->clkmode_dpll_ddr &= ~__builtin_bswap32(1 << 12);
+
+  wkup->clksel_dpll_mpu =
+      __builtin_bswap32((dram_clock << 8) | /*Set DPLL multiplier factor *960*/
+                        (24 - 1));    /*Set DPLL divider factor*/
+
+  /*Set DPLL post-divider factor M2*/
+  wkup->div_m2_dpll_mpu = __builtin_bswap32(1);
+
+  /*Wait DPLL locks*/
+  lock_pll(wkup->clkmode_dpll_ddr, wkup->idlest_dpll_ddr);
+}
+
+void am335x_clock_enable_emif(void) {
+  enable_module(&per->emif_clkctrl);
+  
 }
 
 void am335x_clock_enable_l3_l4wkup(void) {

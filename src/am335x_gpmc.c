@@ -37,7 +37,7 @@ void am335x_gpmc_enable_cs_config(
 	base &= ((0xF0 | size) << 24);
 
 	writel(0, &_cs->config7);
-	sdelay(1000);
+	am335x_dmtimer1_wait_us(1000);
 
 	/* Delay for settling */
 	writel(setting->config1, &_cs->config1);
@@ -53,7 +53,7 @@ void am335x_gpmc_enable_cs_config(
 			(1 << 6)),
 			&_cs->config7);
 
-	sdelay(2000);
+	am335x_dmtimer1_wait_us(2000);
 }
 
 void am335x_gpmc_init(uint32_t clk_div)
