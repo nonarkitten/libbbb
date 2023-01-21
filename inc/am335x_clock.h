@@ -114,7 +114,7 @@ extern void am335x_clock_init_core_pll(void);
  * method to initialize MPU DPLL
  * expects the clock speed in MHz
  */
-extern void am335x_clock_init_mpu_pll(int clock);
+extern void am335x_clock_init_mpu_pll(int mul, int div);
 
 /**
  * method to initialize peripheral DPLL.

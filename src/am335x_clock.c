@@ -313,14 +313,14 @@ void am335x_clock_init_core_pll(void) {
   lock_pll(wkup->clkmode_dpll_core, wkup->idlest_dpll_core);
 }
 
-void am335x_clock_init_mpu_pll(int clock) {
+void am335x_clock_init_mpu_pll(int mul, int div) {
   /*DPLL in bypass*/
   bypass_pll(wkup->clkmode_dpll_mpu, wkup->idlest_dpll_mpu);
 
   /*disable Spread Spectrum Clocking*/
   wkup->clkmode_dpll_mpu &= ~__builtin_bswap32(1 << 12);
   /*Set DPLL multiplier factor*/
-  wkup->clksel_dpll_mpu = __builtin_bswap32((clock << 11) | (24 - 1));
+  wkup->clksel_dpll_mpu = __builtin_bswap32((mul << 11) | (div - 1));
   /*Set DPLL post-divider factor M2*/
   wkup->div_m2_dpll_mpu = __builtin_bswap32(1);
 
