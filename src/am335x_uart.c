@@ -255,7 +255,7 @@ void am335x_uart_init(enum am335x_uart_controllers ctrl)
     am335x_clock_enable_uart_module(uart2clock[ctrl]);
 
     // setup uart pin multiplexing
-    // am335x_mux_setup_uart_pins(uart2mux[ctrl]);
+    am335x_mux_setup_uart_pins(uart2mux[ctrl]);
 
     // reset uart controller and wait until reset complete
     uart->sysc |= __builtin_bswap32(SYSC_SOFTRESET);

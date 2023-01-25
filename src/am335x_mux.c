@@ -31,9 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Endian unsafe
-#if 0
-
 // pad control register bit definition
 #define PAD_CONTROL_SLEWCTRL (1 << 6)
 #define PAD_CONTROL_RXACTIVE (1 << 5)
@@ -211,9 +208,9 @@ static const struct gpio_pad {
 // =====================================================
 
 typedef struct pad {
-    uint32_t module;
-    uint32_t pin;
-    uint32_t mode;
+    uint8_t module;
+    uint8_t pin;
+    uint16_t mode;
 } pad_t;
 
 // uart pad control
@@ -410,7 +407,7 @@ static const struct cpsw_pad_ctrl {
 static void pad_cfg(const pad_t* pad)
 {
     volatile uint32_t* reg = gpio[pad->module][pad->pin].reg;
-    *reg                   = pad->mode;
+    *reg                   = __builtin_bswap32(pad->mode);
     //  *(gpio[pad->module][pad->pin].reg) = pad->mode;
 }
 
@@ -458,7 +455,7 @@ void am335x_mux_setup_gpio_pin(enum am335x_mux_gpio_modules module,
     if (pin_pull == AM335X_MUX_PULL_NONE) cfg |= PAD_CONTROL_PULLUD_NONE;
     if (pin_pull == AM335x_MUX_PULL_UP) cfg |= PAD_CONTROL_PULLUP;
 
-    *(gpio[module][pin_nr].reg) = cfg;
+    *(gpio[module][pin_nr].reg) = __builtin_bswap32(cfg);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -515,4 +512,3 @@ void am335x_mux_setup_cpsw_pins(void)
     pad_cfg(&pad->mii_txd3);
 }
 
-#endif

@@ -213,9 +213,8 @@ void am335x_gpio_setup_pin_in(enum am335x_gpio_modules module, uint32_t pin_nr,
   }
 
   // configure am335x mux as gpio
-  // TODO Fix-me
-  // am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
-  //                           (enum am335x_mux_gpio_pin_pull)pin_pull);
+  am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
+                            (enum am335x_mux_gpio_pin_pull)pin_pull);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -229,9 +228,8 @@ void am335x_gpio_setup_pin_out(enum am335x_gpio_modules module, uint32_t pin_nr,
   am335x_gpio_set_pin_dir(module, pin_nr, AM335X_GPIO_PIN_OUT);
 
   // configure am335x mux as gpio
-  // TODO Fix-me
-  // am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
-  //                           AM335X_MUX_PULL_NONE);
+  am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
+                            AM335X_MUX_PULL_NONE);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -243,9 +241,8 @@ void am335x_gpio_setup_pin(enum am335x_gpio_modules module, uint32_t pin_nr,
   am335x_gpio_set_pin_dir(module, pin_nr, pin_dir);
 
   // configure am335x mux as gpio
-  // TODO Fix-me
-  // am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
-  //                           (enum am335x_mux_gpio_pin_pull)pin_pull);
+  am335x_mux_setup_gpio_pin(gpio2mux[module], pin_nr, AM335X_MUX_PIN_IN,
+                            (enum am335x_mux_gpio_pin_pull)pin_pull);
 }
 
 /* -------------------------------------------------------------------------- */
