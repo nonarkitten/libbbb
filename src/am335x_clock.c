@@ -28,6 +28,7 @@
  */
 
 #include "am335x_clock.h"
+#include "support.h"
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -70,7 +71,7 @@ static volatile struct am335x_cm_per_ctrl {
     uint32_t res3[1];              // 8c-8c
     uint32_t rng_clkctrl;          // 90
     uint32_t aes0_clkctrl;         // 94
-    uint32_t res4[2];              // �98-9c
+    uint32_t res4[2];              //  98-9c
     uint32_t sha0_clkctrl;         // a0
     uint32_t pka_clkctrl;          // a4
     uint32_t gpio6_clkctrl;        // a8
@@ -121,11 +122,11 @@ static volatile struct am335x_cm_per_ctrl {
 #define L3_CLKSTCTRL_CLKACTIVITY_MMC_FCLK            (1 << 3)
 #define L3_CLKSTCTRL_CLKACTIVITY_EMIF_GCLK           (1 << 2)
 
-// CM�PER OCPWP_L3_CLKSTCTRL register bit definition
+// CM PER OCPWP_L3_CLKSTCTRL register bit definition
 #define OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L4_GCLK (1 << 5)
 #define OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK (1 << 4)
 
-// CM�PER�OCPWP_L3_CLKSTCTRL register bit definition
+// CM PER OCPWP_L3_CLKSTCTRL register bit definition
 #define L3S_CLKSTCTRL_CLKACTIVITY_L3S_GCLK           (1 << 3)
 
 static volatile struct am335x_cm_wkup_ctrl {
@@ -241,13 +242,13 @@ static volatile struct am335x_cm_wkup_ctrl {
 // CM DPLL Registers // see SPRUH73L chap. 8.1.2.3 / p. 1283
 static volatile struct am335x_cm_dpll_ctrl {
     uint32_t res0[1];                  // 00
-    uint32_t clksel_timer7_clk;        // 04
-    uint32_t clksel_timer2_clk;        // 08
-    uint32_t clksel_timer3_clk;        // 0c
-    uint32_t clksel_timer4_clk;        // 10
+    uint32_t clksel_timer7_clk;        //  04
+    uint32_t clksel_timer2_clk;        //  08
+    uint32_t clksel_timer3_clk;        //  0c
+    uint32_t clksel_timer4_clk;        //  10
     uint32_t cm_mac_clksel;            // 14
-    uint32_t clksel_timer5_clk;        // 18
-    uint32_t clksel_timer6_clk;        // 1c
+    uint32_t clksel_timer5_clk;        //  18
+    uint32_t clksel_timer6_clk;        //  1c
     uint32_t cm_cpts_rft_clksel;       // 20
     uint32_t res1[1];                  // 24
     uint32_t clksel_timer1ms_clk;      // 28
@@ -258,56 +259,94 @@ static volatile struct am335x_cm_dpll_ctrl {
     uint32_t clksel_gpio0_dbclk;       // 3c
 }* dpll = (struct am335x_cm_dpll_ctrl*)0x44e00500;
 
+/* --------------------------------------------------------------------------
+ * implementation of the internal methods
+ * -------------------------------------------------------------------------- */
+
+/**
+ * method to enable module clock and wait until performed
+ *
+ *@param ctrl address of the controller register
+ */
 static inline void enable_module(volatile uint32_t* ctrl) {
-    *ctrl = __builtin_bswap32(0x02);
-    while ((*ctrl & __builtin_bswap32(0x0303)) != __builtin_bswap32(0x0202)) continue;
+    *ctrl = LE32(0x0002);
+    while ((LE32(*ctrl) & 0x0303) != 0x0002) {}
 }
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * method to wake-up a module and wait until performed
+ *
+ *@param ctrl address of the controller register
+ */
 static inline void wkup_module(volatile uint32_t* ctrl) {
-    *ctrl = __builtin_bswap32(0x02);
-    while ((*ctrl & __builtin_bswap32(0x03)) != __builtin_bswap32(0x02)) continue;
+    *ctrl = LE32(0x0002);
+    while ((LE32(*ctrl) & 0x0003) != 0x0002) {}
 }
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * method to wait until a flag is set
+ *
+ *@param ctrl address of the controller register
+ *@param bit bit to wait for
+ */
 static inline void wait4bit(volatile uint32_t* ctrl, uint32_t bit) {
-    while ((*ctrl & __builtin_bswap32(bit)) == 0) continue;
+    while ((LE32(*ctrl) & bit) == 0) {}
 }
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * method to wait until module enabled
+ *
+ *@param ctrl address of the controller register
+ */
 static inline void wait4mode(volatile uint32_t* ctrl) {
-    while ((*ctrl & __builtin_bswap32(0x03)) != __builtin_bswap32(0x02)) continue;
+    while ((LE32(*ctrl) & 0x0003) != 0x0002){}
 }
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * method to set a specific bit and wait until performed
+ *
+ *@param ctrl address of the controller register
+ *@param bit bit mask to set
+ */
 static inline void setbit(volatile uint32_t* ctrl, uint32_t bit) {
-    bit = __builtin_bswap32(bit);
-    *ctrl |= bit;
-    while ((*ctrl & bit) == 0) continue;
+    *ctrl |= LE32(bit);
+    while ((LE32(*ctrl) & bit) == 0) {}
 }
 
-static inline void bypass_pll(volatile uint32_t* ctrl,
-                              volatile uint32_t* idlest) {
-    *ctrl = (*ctrl & ~__builtin_bswap32(0x07)) | __builtin_bswap32(0x04);
-    while ((*idlest & __builtin_bswap32(0x0101)) == __builtin_bswap32(0x01)) continue;
-    return;
+
+static inline void bypass_pll(volatile uint32_t* ctrl, volatile uint32_t* idlest) {
+    *ctrl = (*ctrl & ~LE32(0x07)) | LE32(0x04);
+    while ((*idlest & LE32(0x0101)) == LE32(0x01)) {}
 }
 
-static inline void lock_pll(volatile uint32_t* ctrl,
-                            volatile uint32_t* idlest) {
-    *ctrl |= __builtin_bswap32(0x07);
-    while ((*idlest & __builtin_bswap32(0x0101)) == __builtin_bswap32(0x0001)) continue;
-    return;
+static inline void lock_pll(volatile uint32_t* ctrl, volatile uint32_t* idlest) {
+    *ctrl |= LE32(0x07);
+    while ((*idlest & LE32(0x0101)) == LE32(0x0001)) {}
 }
 
 /* --------------------------------------------------------------------------
  * implementation of the public methods
  * -------------------------------------------------------------------------- */
-
 void am335x_clock_init_core_pll(void) {
     /*DPLL in bypass*/
     bypass_pll(wkup->clkmode_dpll_core, wkup->idlest_dpll_core);
 
     /*Set DPLL multiplier factor 1000 and ref clock */
-    wkup->clksel_dpll_core = __builtin_bswap32((1000 << 8) | (24 - 1));
+    wkup->clksel_dpll_core = LE32((1000 << 8) | (24 - 1));
     /*Set DPLL post-divider factor M4*/
-    wkup->div_m4_dpll_core = __builtin_bswap32(10);
+    wkup->div_m4_dpll_core = LE32(10);
     /*Set DPLL post-divider factor M5*/
-    wkup->div_m5_dpll_core = __builtin_bswap32(8);
+    wkup->div_m5_dpll_core = LE32(8);
     /*Set DPLL post-divider factor M5*/
-    wkup->div_m6_dpll_core = __builtin_bswap32(4);
+    wkup->div_m6_dpll_core = LE32(4);
 
     /*Wait DPLL locks*/
     lock_pll(wkup->clkmode_dpll_core, wkup->idlest_dpll_core);
@@ -318,11 +357,11 @@ void am335x_clock_init_mpu_pll(int mul, int div) {
     bypass_pll(wkup->clkmode_dpll_mpu, wkup->idlest_dpll_mpu);
 
     /*disable Spread Spectrum Clocking*/
-    wkup->clkmode_dpll_mpu &= ~__builtin_bswap32(1 << 12);
+    wkup->clkmode_dpll_mpu &= ~LE32(1 << 12);
     /*Set DPLL multiplier factor*/
-    wkup->clksel_dpll_mpu = __builtin_bswap32((mul << 11) | (div - 1));
+    wkup->clksel_dpll_mpu = LE32((mul << 11) | (div - 1));
     /*Set DPLL post-divider factor M2*/
-    wkup->div_m2_dpll_mpu = __builtin_bswap32(1);
+    wkup->div_m2_dpll_mpu = LE32(1);
 
     /*Wait DPLL locks*/
     lock_pll(wkup->clkmode_dpll_mpu, wkup->idlest_dpll_mpu);
@@ -333,15 +372,15 @@ void am335x_clock_init_per_pll(void) {
     bypass_pll(wkup->clkmode_dpll_per, wkup->idlest_dpll_per);
 
     /*disable Spread Spectrum Clocking*/
-    wkup->clkmode_dpll_per &= ~__builtin_bswap32(1 << 12);
+    wkup->clkmode_dpll_per &= ~LE32(1 << 12);
 
-    wkup->clksel_dpll_mpu =
-        __builtin_bswap32((4 << 24) |  /*Set DPLL Sigma-Delta divider*/
-                          (960 << 8) | /*Set DPLL multiplier factor *960*/
-                          (24 - 1));   /*Set DPLL divider factor*/
+    wkup->clksel_dpll_mpu = LE32(
+        (4 << 24)  | /*Set DPLL Sigma-Delta divider*/
+        (960 << 8) | /*Set DPLL multiplier factor *960*/
+        (24 - 1));   /*Set DPLL divider factor*/
 
     /*Set DPLL post-divider factor M2*/
-    wkup->div_m2_dpll_per = __builtin_bswap32(5);
+    wkup->div_m2_dpll_per = LE32(5);
 
     /*Wait DPLL locks*/
     lock_pll(wkup->clkmode_dpll_per, wkup->idlest_dpll_per);
@@ -352,14 +391,14 @@ void am335x_clock_init_ddr_pll(int dram_clock) {
     bypass_pll(wkup->clkmode_dpll_ddr, wkup->idlest_dpll_ddr);
 
     /*disable Spread Spectrum Clocking*/
-    wkup->clkmode_dpll_ddr &= ~__builtin_bswap32(1 << 12);
+    wkup->clkmode_dpll_ddr &= ~LE32(1 << 12);
 
     wkup->clksel_dpll_mpu =
-        __builtin_bswap32((dram_clock << 8) | /*Set DPLL multiplier factor *960*/
+        LE32((dram_clock << 8) | /*Set DPLL multiplier factor *960*/
                           (24 - 1));          /*Set DPLL divider factor*/
 
     /*Set DPLL post-divider factor M2*/
-    wkup->div_m2_dpll_mpu = __builtin_bswap32(1);
+    wkup->div_m2_dpll_mpu = LE32(1);
 
     /*Wait DPLL locks*/
     lock_pll(wkup->clkmode_dpll_ddr, wkup->idlest_dpll_ddr);
@@ -380,8 +419,8 @@ void am335x_clock_enable_l3_l4wkup(void) {
 
     // wait until modules are active
     wait4bit(&per->l3_clkstctrl, L3_CLKSTCTRL_CLKACTIVITY_L3_GCLK);
-    // GAC wait4bit (&per->ocpwp_l3_clkstctrl,
-    // OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK);
+    ///  GAC wait4bit (&per->ocpwp_l3_clkstctrl,
+    /// OCPWP_L3_CLKSTCTRL_CLKACTIVITY_OCPWP_L3_GCLK);
     wait4bit(&per->l3s_clkstctrl, L3S_CLKSTCTRL_CLKACTIVITY_L3S_GCLK);
 
     // wake-up regions
@@ -398,32 +437,21 @@ void am335x_clock_enable_l3_l4wkup(void) {
              L4_WKUP_AON_CLKSTCTRL_CLKACTIVITY_L4_WKUP_AON_GCLK);
 }
 
-/* -------------------------------------------------------------------------- */
-
 void am335x_clock_enable_gpmc(uint32_t clk_div) {
-    //
-    //	wkup->div_m4_dpll_core |= 0x100;
-    //	while((wkup->div_m4_dpll_core & 0x200) == 0)
-    //		;
-
-    wkup->div_m4_dpll_core = (wkup->div_m4_dpll_core & ~__builtin_bswap32(0x1F)) |
-                             __builtin_bswap32(0x1F & clk_div);
+    wkup->div_m4_dpll_core = (wkup->div_m4_dpll_core & ~LE32(0x1F)) | LE32(0x1F & clk_div);
 
     enable_module(&per->gpmc_clkctrl);
     enable_module(&per->elm_clkctrl);
 }
 
-// void am335x_clock_reset_pru(void) {
-//	per->l4ls_clkctrl |=  0x2;
-//	per->l4ls_clkctrl &= ~0x2;
-// }
-//
 void am335x_clock_enable_pru(volatile uint32_t* pru_reset) {
     enable_module(&per->l4ls_clkstctrl);
-    *pru_reset = __builtin_bswap32(2);
+    *pru_reset = LE32(2);
     enable_module(&per->icss_clkctrl);
-    *pru_reset = __builtin_bswap32(2);
+    *pru_reset = LE32(2);
 }
+
+/* -------------------------------------------------------------------------- */
 
 void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module) {
     switch (module) {
@@ -434,16 +462,13 @@ void am335x_clock_enable_uart_module(enum am335x_clock_uart_modules module) {
             break;
 
         case AM335X_CLOCK_UART1:
-            while (1)
-                ;
+            while (1) ;
             break;
         case AM335X_CLOCK_UART2:
-            while (1)
-                ;
+            while (1) ;
             break;
         case AM335X_CLOCK_UART3:
-            while (1)
-                ;
+            while (1) ;
             break;
         case AM335X_CLOCK_UART4:
             enable_module(&per->uart4_clkctrl);
@@ -526,37 +551,37 @@ void am335x_clock_enable_timer_module(enum am335x_clock_timer_modules module) {
         case AM335X_CLOCK_TIMER1:
             enable_module(&wkup->wkup_timer1_clkctrl);
             wait4bit(&wkup->wkup_clkstctrl, WKUP_CLKSTCTRL_CLKACTIVITY_TIMER1_GFCLK);
-            dpll->clksel_timer1ms_clk = 0x0;
+            dpll->clksel_timer1ms_clk = LE32(0x0);
             break;
 
         case AM335X_CLOCK_TIMER2:
             enable_module(&per->timer2_clkctrl);
-            dpll->clksel_timer2_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer2_clk = LE32(0x1);
             break;
 
         case AM335X_CLOCK_TIMER3:
             enable_module(&per->timer3_clkctrl);
-            dpll->clksel_timer3_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer3_clk = LE32(0x1);
             break;
 
         case AM335X_CLOCK_TIMER4:
             enable_module(&per->timer4_clkctrl);
-            dpll->clksel_timer4_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer4_clk = LE32(0x1);
             break;
 
         case AM335X_CLOCK_TIMER5:
             enable_module(&per->timer5_clkctrl);
-            dpll->clksel_timer5_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer5_clk = LE32(0x1);
             break;
 
         case AM335X_CLOCK_TIMER6:
             enable_module(&per->timer6_clkctrl);
-            dpll->clksel_timer6_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer6_clk = LE32(0x1);
             break;
 
         case AM335X_CLOCK_TIMER7:
             enable_module(&per->timer7_clkctrl);
-            dpll->clksel_timer7_clk = __builtin_bswap32(0x1);
+            dpll->clksel_timer7_clk = LE32(0x1);
             break;
     }
 }

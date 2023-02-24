@@ -7,12 +7,13 @@
 
 #include <stdint.h>
 
+#include "support.h"
 #include "am335x_gpmc.h"
 
 static volatile const am335x_gpmc_regs_t* gpmc = (am335x_gpmc_regs_t*)0x50000000;
 
 static void writel(uint32_t value, uint32_t* address) {
-	*(volatile uint32_t*)address = __builtin_bswap32(value);
+	*(volatile uint32_t*)address = LE32(value);
 	asm volatile("" : : : "memory");
 }
 

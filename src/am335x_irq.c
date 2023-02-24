@@ -29,6 +29,7 @@
  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include "support.h"
 #include "am335x_irq.h"
 
 #include <stdint.h>
@@ -264,107 +265,102 @@ void IntUnRegister(uint32_t intrNum) {
 
 void IntAINTCInit(void) {
     /* Reset the ARM interrupt controller */
-    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) = INTC_SYSCONFIG_SOFTRESET;
+    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) = LE32(INTC_SYSCONFIG_SOFTRESET);
 
     /* Wait for the reset to complete */
     while ((HWREG(SOC_AINTC_REGS + INTC_SYSSTATUS) &
-            INTC_SYSSTATUS_RESETDONE) != INTC_SYSSTATUS_RESETDONE)
-        ;
+            LE32(INTC_SYSSTATUS_RESETDONE)) != LE32(INTC_SYSSTATUS_RESETDONE)) {}
 
     /* Enable any interrupt generation by setting priority threshold */
-    HWREG(SOC_AINTC_REGS + INTC_THRESHOLD) = INTC_THRESHOLD_PRIORITYTHRESHOLD;
+    HWREG(SOC_AINTC_REGS + INTC_THRESHOLD) = LE32(INTC_THRESHOLD_PRIORITYTHRESHOLD);
 }
 
 void IntPrioritySet(uint32_t intrNum, uint32_t priority, uint32_t hostIntRoute) {
-    HWREG(SOC_AINTC_REGS + INTC_ILR(intrNum)) =
-        ((priority << INTC_ILR_PRIORITY_SHIFT) & INTC_ILR_PRIORITY) |
-        hostIntRoute;
+    HWREG(SOC_AINTC_REGS + INTC_ILR(intrNum)) = LE32(((priority << INTC_ILR_PRIORITY_SHIFT) & INTC_ILR_PRIORITY) | hostIntRoute);
 }
 
 void IntSystemEnable(uint32_t intrNum) {
     /* Disable the system interrupt in the corresponding MIR_CLEAR register */
-    HWREG(SOC_AINTC_REGS + INTC_MIR_CLEAR(intrNum >> REG_IDX_SHIFT)) =
-        (0x01 << (intrNum & REG_BIT_MASK));
+    HWREG(SOC_AINTC_REGS + INTC_MIR_CLEAR(intrNum >> REG_IDX_SHIFT)) = LE32(0x01 << (intrNum & REG_BIT_MASK));
 }
 
 void IntSystemDisable(uint32_t intrNum) {
-    HWREG(SOC_AINTC_REGS + INTC_MIR_SET(intrNum >> REG_IDX_SHIFT)) =
-        (0x01 << (intrNum & REG_BIT_MASK));
+    HWREG(SOC_AINTC_REGS + INTC_MIR_SET(intrNum >> REG_IDX_SHIFT)) = LE32(0x01 << (intrNum & REG_BIT_MASK));
 }
 
 void IntIfClkFreeRunSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) &= ~INTC_SYSCONFIG_AUTOIDLE;
+    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) &= ~LE32(INTC_SYSCONFIG_AUTOIDLE);
 }
 
 void IntIfClkAutoGateSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) |= INTC_SYSCONFIG_AUTOIDLE;
+    HWREG(SOC_AINTC_REGS + INTC_SYSCONFIG) |= LE32(INTC_SYSCONFIG_AUTOIDLE);
 }
 
 uint32_t IntActiveIrqNumGet(void) {
-    return (HWREG(SOC_AINTC_REGS + INTC_SIR_IRQ) & INTC_SIR_IRQ_ACTIVEIRQ);
+    return LE32(HWREG(SOC_AINTC_REGS + INTC_SIR_IRQ) & INTC_SIR_IRQ_ACTIVEIRQ);
 }
 
 uint32_t IntActiveFiqNumGet(void) {
-    return (HWREG(SOC_AINTC_REGS + INTC_SIR_FIQ) & INTC_SIR_FIQ_ACTIVEFIQ);
+    return LE32(HWREG(SOC_AINTC_REGS + INTC_SIR_FIQ) & INTC_SIR_FIQ_ACTIVEFIQ);
 }
 
 uint32_t IntSpurIrqFlagGet(void) {
-    return ((HWREG(SOC_AINTC_REGS + INTC_SIR_IRQ) & INTC_SIR_IRQ_SPURIOUSIRQ) >>
+    return (LE32(HWREG(SOC_AINTC_REGS + INTC_SIR_IRQ) & INTC_SIR_IRQ_SPURIOUSIRQ) >>
             INTC_SIR_IRQ_SPURIOUSIRQ_SHIFT);
 }
 
 uint32_t IntSpurFiqFlagGet(void) {
-    return ((HWREG(SOC_AINTC_REGS + INTC_SIR_FIQ) & INTC_SIR_FIQ_SPURIOUSFIQ) >>
+    return (LE32(HWREG(SOC_AINTC_REGS + INTC_SIR_FIQ) & INTC_SIR_FIQ_SPURIOUSFIQ) >>
             INTC_SIR_FIQ_SPURIOUSFIQ_SHIFT);
 }
 
 void IntProtectionEnable(void) {
-    HWREG(SOC_AINTC_REGS + INTC_PROTECTION) = INTC_PROTECTION_PROTECTION;
+    HWREG(SOC_AINTC_REGS + INTC_PROTECTION) = LE32(INTC_PROTECTION_PROTECTION);
 }
 
 void IntProtectionDisable(void) {
-    HWREG(SOC_AINTC_REGS + INTC_PROTECTION) &= ~INTC_PROTECTION_PROTECTION;
+    HWREG(SOC_AINTC_REGS + INTC_PROTECTION) &= ~LE32(INTC_PROTECTION_PROTECTION);
 }
 
 void IntSyncClkFreeRunSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_IDLE) &= ~INTC_IDLE_TURBO;
+    HWREG(SOC_AINTC_REGS + INTC_IDLE) &= ~LE32(INTC_IDLE_TURBO);
 }
 
 void IntSyncClkAutoGateSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_IDLE) |= INTC_IDLE_TURBO;
+    HWREG(SOC_AINTC_REGS + INTC_IDLE) |= LE32(INTC_IDLE_TURBO);
 }
 
 void IntFuncClkFreeRunSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_IDLE) |= INTC_IDLE_FUNCIDLE;
+    HWREG(SOC_AINTC_REGS + INTC_IDLE) |= LE32(INTC_IDLE_FUNCIDLE);
 }
 
 void IntFuncClkAutoGateSet(void) {
-    HWREG(SOC_AINTC_REGS + INTC_IDLE) &= ~INTC_IDLE_FUNCIDLE;
+    HWREG(SOC_AINTC_REGS + INTC_IDLE) &= ~LE32(INTC_IDLE_FUNCIDLE);
 }
 
 uint32_t IntCurrIrqPriorityGet(void) {
-    return (HWREG(SOC_AINTC_REGS + INTC_IRQ_PRIORITY) &
+    return LE32(HWREG(SOC_AINTC_REGS + INTC_IRQ_PRIORITY) &
             INTC_IRQ_PRIORITY_IRQPRIORITY);
 }
 
 uint32_t IntCurrFiqPriorityGet(void) {
-    return (HWREG(SOC_AINTC_REGS + INTC_FIQ_PRIORITY) &
+    return LE32(HWREG(SOC_AINTC_REGS + INTC_FIQ_PRIORITY) &
             INTC_FIQ_PRIORITY_FIQPRIORITY);
 }
 
 uint32_t IntPriorityThresholdGet(void) {
-    return (HWREG(SOC_AINTC_REGS + INTC_THRESHOLD) &
+    return LE32(HWREG(SOC_AINTC_REGS + INTC_THRESHOLD) &
             INTC_THRESHOLD_PRIORITYTHRESHOLD);
 }
 
 void IntPriorityThresholdSet(uint32_t threshold) {
     HWREG(SOC_AINTC_REGS + INTC_THRESHOLD) =
-        threshold & INTC_THRESHOLD_PRIORITYTHRESHOLD;
+        LE32(threshold & INTC_THRESHOLD_PRIORITYTHRESHOLD);
 }
 
 uint32_t IntRawStatusGet(uint32_t intrNum) {
     return (
-        (0 == ((HWREG(SOC_AINTC_REGS + INTC_ITR(intrNum >> REG_IDX_SHIFT)) >>
+        (0 == ((LE32(HWREG(SOC_AINTC_REGS + INTC_ITR(intrNum >> REG_IDX_SHIFT))) >>
                 (intrNum & REG_BIT_MASK)) &
                0x01))
             ? FALSE
@@ -373,25 +369,25 @@ uint32_t IntRawStatusGet(uint32_t intrNum) {
 
 void IntSoftwareIntSet(uint32_t intrNum) {
     HWREG(SOC_AINTC_REGS + INTC_ISR_SET(intrNum >> REG_IDX_SHIFT)) =
-        (0x01 << (intrNum & REG_BIT_MASK));
+        LE32(0x01 << (intrNum & REG_BIT_MASK));
 }
 
 void IntSoftwareIntClear(uint32_t intrNum) {
     HWREG(SOC_AINTC_REGS + INTC_ISR_CLEAR(intrNum >> REG_IDX_SHIFT)) =
-        (0x01 << (intrNum & REG_BIT_MASK));
+        LE32(0x01 << (intrNum & REG_BIT_MASK));
 }
 
 uint32_t IntPendingIrqMaskedStatusGet(uint32_t intrNum) {
-    return ((0 == (HWREG(SOC_AINTC_REGS +
-                         INTC_PENDING_IRQ(intrNum >> REG_IDX_SHIFT)) >>
+    return ((0 == (LE32(HWREG(SOC_AINTC_REGS +
+                         INTC_PENDING_IRQ(intrNum >> REG_IDX_SHIFT))) >>
                    (((intrNum & REG_BIT_MASK)) & 0x01)))
                 ? FALSE
                 : TRUE);
 }
 
 uint32_t IntPendingFiqMaskedStatusGet(uint32_t intrNum) {
-    return ((0 == (HWREG(SOC_AINTC_REGS +
-                         INTC_PENDING_FIQ(intrNum >> REG_IDX_SHIFT)) >>
+    return ((0 == (LE32(HWREG(SOC_AINTC_REGS +
+                         INTC_PENDING_FIQ(intrNum >> REG_IDX_SHIFT))) >>
                    (((intrNum & REG_BIT_MASK)) & 0x01)))
                 ? FALSE
                 : TRUE);

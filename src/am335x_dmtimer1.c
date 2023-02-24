@@ -28,6 +28,7 @@
 
 #include "am335x_clock.h"
 #include "am335x_dmtimer1.h"
+#include "support.h"
 
 /* -- Internal types and constant definition -------------------------------- */
 
@@ -47,56 +48,58 @@
 /**
  * DMTimer1 Register Definition
  */
-static volatile struct timer1_ctrl {
+struct timer1_ctrl {
     uint32_t tidr;       // 00
     uint32_t res1[3];    // 04-0c
     uint32_t tiocp_cfg;  // 10
     uint32_t tistat;     // 14
     uint32_t tisr;       // 18
-    uint32_t tier;       // 1c
+    uint32_t tier;       //  1c
     uint32_t twer;       // 20
     uint32_t tclr;       // 24
     uint32_t tcrr;       // 28
     uint32_t tldr;       // 2c
     uint32_t ttgr;       // 30
-    uint32_t twps;       // 34
+    uint32_t twps;       //  34
     uint32_t tmar;       // 38
-    uint32_t tcar1;      // 3c
-    uint32_t tsicr;      // 40
+    uint32_t tcar1;      //  3c
+    uint32_t tsicr;      //  40
     uint32_t tcar2;      // 44
     uint32_t tpir;       // 48
     uint32_t tnir;       // 4c
     uint32_t tcvr;       // 50
     uint32_t tocr;       // 54
     uint32_t towr;       // 5c
-}* timer1 = (volatile struct timer1_ctrl*)0x44e31000;
+};
+
+/**
+ * DMTimer1 registers
+ */
+static volatile struct timer1_ctrl* timer1 =
+    (volatile struct timer1_ctrl*)0x44e31000;
 
 // -- Public methods definition -----------------------------------------------
 
 void am335x_dmtimer1_init() {
     static bool is_initialized = false;
-    if (!is_initialized) {
-        am335x_clock_enable_timer_module(AM335X_CLOCK_TIMER1);
+    if (is_initialized) return;
 
-        timer1->tiocp_cfg = __builtin_bswap32(TIOCP_CFG_SOFTRESET);
+    // configure DMTimer1 for internal use (resolution 24MHz)
+    am335x_clock_enable_timer_module(AM335X_CLOCK_TIMER1);
 
-        while ((timer1->tistat & __builtin_bswap32(TISTAT_RESETDONE)) == 0)
-            continue;
+    timer1->tiocp_cfg = LE32(TIOCP_CFG_SOFTRESET);  // force a software reset
+    while ((LE32(timer1->tistat) & TISTAT_RESETDONE) == 0) {}
+    timer1->tldr = LE32(0);
+    timer1->tcrr = LE32(0);
+    timer1->ttgr = LE32(0);
+    timer1->tclr = LE32(TCLR_AR | TCLR_ST);
 
-        timer1->tldr = 0;
-        timer1->tcrr = 0;
-        timer1->ttgr = 0;
-        timer1->tclr = __builtin_bswap32(TCLR_AR | TCLR_ST);
-
-        is_initialized = true;
-    }
+    is_initialized = true;
 }
 
 // ----------------------------------------------------------------------------
 
-double am335x_dmtimer1_get_time() {
-    return __builtin_bswap32(timer1->tcrr) / (double)FREQUENCY;
-}
+uint32_t am335x_dmtimer1_get_counter() { return LE32(timer1->tcrr); }
 
 // ----------------------------------------------------------------------------
 
@@ -104,12 +107,16 @@ uint32_t am335x_dmtimer1_get_frequency() { return FREQUENCY; }
 
 // ----------------------------------------------------------------------------
 
+double am335x_dmtimer1_get_time(void) {
+    return LE32(timer1->tcrr) / ((double)FREQUENCY);
+}
+
 void am335x_dmtimer1_wait_us(uint32_t us) {
     uint32_t clocks = us * (FREQUENCY / 1000000) + 1;
-    uint32_t st = __builtin_bswap32(timer1->tcrr);
-    uint32_t sp = st;
+    uint32_t st     = LE32(timer1->tcrr);
+    uint32_t sp     = st;
     while (((sp - st) < clocks)) {
-        sp = __builtin_bswap32(timer1->tcrr);
+        sp = LE32(timer1->tcrr);
     }
 }
 
@@ -117,19 +124,19 @@ void am335x_dmtimer1_wait_us(uint32_t us) {
 
 void am335x_dmtimer1_wait_ms(uint32_t ms) {
     uint32_t clocks = ms * (FREQUENCY / 1000) + 1;
-    uint32_t st = __builtin_bswap32(timer1->tcrr);
-    uint32_t sp = st;
+    uint32_t st     = LE32(timer1->tcrr);
+    uint32_t sp     = st;
     while (((sp - st) < clocks)) {
-        sp = __builtin_bswap32(timer1->tcrr);
+        sp = LE32(timer1->tcrr);
     }
 }
 
 // ----------------------------------------------------------------------------
 
 uint64_t am335x_dmtimer1_get_uptime() {
-    static uint32_t st = 0;
+    static uint32_t st     = 0;
     static uint64_t uptime = 0;
-    uint32_t sp = __builtin_bswap32(timer1->tcrr);
+    uint32_t        sp     = LE32(timer1->tcrr);
     uptime += sp - st;
     st = sp;
     return uptime;

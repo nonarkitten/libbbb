@@ -27,6 +27,7 @@
  * Date:    17.03.2019
  */
 
+#include "support.h"
 #include "am335x_spi.h"
 
 #include "am335x_clock.h"
@@ -125,25 +126,25 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
         am335x_clock_enable_spi_module(spi2clock[ctrl]);
 
         // reset and disable spi controller
-        spi->sysconfig = __builtin_bswap32(SYSCONFIG_SRST);
-        while ((spi->sysstatus & __builtin_bswap32(SYSSTATUS_RDONE)) == 0)
+        spi->sysconfig = LE32(SYSCONFIG_SRST);
+        while ((spi->sysstatus & LE32(SYSSTATUS_RDONE)) == 0)
             ;
 
         // configure clock activity and idle mode
-        spi->sysconfig = __builtin_bswap32(SYSCONFIG_SIDLEMODE_NOIDLE |
+        spi->sysconfig = LE32(SYSCONFIG_SIDLEMODE_NOIDLE |
                                            SYSCONFIG_CLKACTIVITY_BOTH);
 
         //  configure module contoller
         //  module is configured after the channel to avoid glitch on chip select
         //  signal
-        spi->modulctrl =
-            __builtin_bswap32((0 << 8)    // �fifo managed with ctrl register
-                              | (0 << 7)  // multiword disabled
-                              | (1 << 4)  // �initial spi delay = 4 spi clock
-                              | (0 << 3)  // functional mode
-                              | (0 << 2)  // �master mode
-                              | (0 << 1)  // use SPIEN as chip select
-                              | (1 << 0)  // multi channel mode
+        spi->modulctrl = LE32(
+              (0 << 8)  // fifo managed with ctrl register
+            | (0 << 7)  // multiword disabled
+            | (1 << 4)  // initial spi delay = 4 spi clock
+            | (0 << 3)  // functional mode
+            | (0 << 2)  // master mode
+            | (0 << 1)  // use SPIEN as chip select
+            | (1 << 0)  // multi channel mode
             );
 
         // set fifo level to 0
@@ -172,24 +173,24 @@ void am335x_spi_init(enum am335x_spi_controllers ctrl,
     }
 
     // configure channel (tx & rx fifo disabled)
-    chan->chconf =
-        __builtin_bswap32((clkg << 29)             // clock granularity
-                          | (3 << 25)              // chip select time control 2.5 cycles
-                          | (0 << 21)              // spienslv = 0
-                          | (0 << 20)              // force = 0
-                          | (0 << 19)              // turbo = 0
-                          | (1 << 16)              // TX on D1, RX on D0
-                          | (0 << 14)              // DMA transfer disabled
-                          | (0 << 12)              // TX + RX mode
-                          | ((word_len - 1) << 7)  // spi word len
-                          | (1 << 6)               // spien polarity = low
-                          | (clkd << 2)            // frequency diviver
-                          | (0 << 1)               // spiclk polarity = high
-                          | (0 << 0)               // spiclk phase = odd
+    chan->chconf = LE32(
+        (clkg << 29)             // clock granularity
+        | (3 << 25)              // chip select time control 2.5 cycles
+        | (0 << 21)              // spienslv = 0
+        | (0 << 20)              // force = 0
+        | (0 << 19)              // turbo = 0
+        | (1 << 16)              // TX on D1, RX on D0
+        | (0 << 14)              // DMA transfer disabled
+        | (0 << 12)              // TX + RX mode
+        | ((word_len - 1) << 7)  // spi word len
+        | (1 << 6)               // spien polarity = low
+        | (clkd << 2)            // frequency diviver
+        | (0 << 1)               // spiclk polarity = high
+        | (0 << 0)               // spiclk phase = odd
         );
 
     // configure clock ration extender
-    chan->chctrl = __builtin_bswap32(extclk << 8);
+    chan->chctrl = LE32(extclk << 8);
 
     // setup spi pins
     am335x_mux_setup_spi_pins(spi2mux[ctrl]);
@@ -204,23 +205,23 @@ int am335x_spi_xfer(enum am335x_spi_controllers ctrl,
     volatile struct am335x_spi_channel* chan = &spi->channel[channel];
 
     // enable channel
-    chan->chctrl |= __builtin_bswap32(CHCTRL_EN);
-    chan->chconf |= __builtin_bswap32(1 << 20);
+    chan->chctrl |= LE32(CHCTRL_EN);
+    chan->chconf |= LE32(1 << 20);
 
     while (buffer_len--) {
-        while ((chan->chstat & __builtin_bswap32(CHSTAT_TXS)) == 0) continue;
-        chan->tx = __builtin_bswap32(*buffer);
-        while ((chan->chstat & __builtin_bswap32(CHSTAT_RXS)) == 0) continue;
-        *buffer++ = __builtin_bswap32(chan->rx) & 0xff;
+        while ((chan->chstat & LE32(CHSTAT_TXS)) == 0) continue;
+        chan->tx = LE32(*buffer);
+        while ((chan->chstat & LE32(CHSTAT_RXS)) == 0) continue;
+        *buffer++ = LE32(chan->rx) & 0xff;
     }
 
     // wait until transfer complete
     // while ((chan->chstat & CHSTAT_EOT) == 0) continue;
 
     // restore chconf
-    chan->chconf &= ~__builtin_bswap32(1 << 20);
+    chan->chconf &= ~LE32(1 << 20);
     // disable channel
-    chan->chctrl &= ~__builtin_bswap32(CHCTRL_EN);
+    chan->chctrl &= ~LE32(CHCTRL_EN);
 
     return 0;
 }
